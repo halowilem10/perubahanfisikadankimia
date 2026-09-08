@@ -1,0 +1,2650 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="theme-color" content="#1E3A8A"/>
+<meta name="description" content="Lab Maya IPA Kelas VII — Eksperimen Susu Menjadi Dadih: simulasi interaktif perubahan fisika dan kimia."/>
+<title>Lab Maya · Susu Menjadi Dadih — IPA Kelas VII</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --royal:#1E3A8A; --royal-deep:#15297A; --navy:#0F1F52;
+  --bright:#2E6FE0; --bright-deep:#1D54B8;
+  --sky1:#EAF3FE; --sky2:#C9E0FA; --line:#CFE0F7; --line-soft:#E2ECFB;
+  --paper:#FFFFFF; --gray-lite:#F4F7FB;
+  --yellow:#FFCF33; --yellow-deep:#E3A800; --yellow-soft:#FFF6D9;
+  --ink:#14245F; --ink-soft:#4C6BAE;
+  --ok:#1E9E6A; --ok-bg:#E7F7EF; --err:#DF5A52; --err-bg:#FCEBEA;
+  --shadow:0 8px 24px rgba(30,58,138,.12);
+  --glow-blue:0 0 0 4px rgba(46,111,224,.16), 0 10px 26px rgba(46,111,224,.18);
+  --glow-yellow:0 10px 26px rgba(255,207,51,.45);
+}
+*{box-sizing:border-box; margin:0; padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='60' viewBox='0 0 140 60'%3E%3Cg fill='none' stroke='%232E6FE0' stroke-opacity='.07' stroke-width='2'%3E%3Cpath d='M0 15 Q 17.5 5 35 15 T 70 15 T 105 15 T 140 15'/%3E%3Cpath d='M0 45 Q 17.5 35 35 45 T 70 45 T 105 45 T 140 45'/%3E%3C/g%3E%3C/svg%3E") repeat fixed,
+    linear-gradient(180deg,#FFFFFF 0%,var(--sky1) 26%,var(--sky2) 60%,#9CC4EF 100%) fixed;
+  min-height:100vh; line-height:1.55;
+}
+body.home-open{overflow:hidden}
+body.loading-open{overflow:hidden}
+h1,h2,h3{font-family:'Fredoka',sans-serif}
+button{font-family:inherit; cursor:pointer}
+input,textarea{font-family:inherit; color:var(--ink)}
+.hidden{display:none !important}
+:focus-visible{outline:3px solid var(--yellow); outline-offset:2px; border-radius:8px}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#A9C6EE;border-radius:99px;border:2px solid #EAF3FE}
+::-webkit-scrollbar-track{background:transparent}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important}
+  html{scroll-behavior:auto}
+}
+
+/* ===================== LOADING PAGE (0% - 100%) — BACKGROUND loading.jpg ===================== */
+.loader{position:fixed; inset:0; z-index:700; display:grid; place-items:center; padding:20px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.18) 0%,rgba(234,243,254,.22) 50%,rgba(201,224,250,.30) 100%),
+    url('loading.jpg') center/cover no-repeat,
+    linear-gradient(180deg,#FFFFFF 0%,var(--sky1) 30%,var(--sky2) 70%,#8FB9EE 100%);
+  transition:opacity .55s ease}
+.loader.done{opacity:0; pointer-events:none}
+.loader-card{max-width:430px; width:100%; text-align:center; background:rgba(255,255,255,.88);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border:1.5px solid var(--line); border-radius:26px; padding:30px 26px 24px;
+  box-shadow:var(--shadow), 0 0 40px rgba(255,255,255,.35)}
+.loader-flask{width:94px;height:94px;margin:0 auto 16px;border-radius:28px;color:#fff;
+  background:linear-gradient(180deg,#2B4CB0,var(--royal));display:grid;place-items:center;position:relative;
+  box-shadow:0 14px 30px rgba(30,58,138,.35), 0 0 0 5px rgba(255,207,51,.28);
+  animation:flaskPulse 1.6s ease-in-out infinite}
+.loader-flask svg{width:46px;height:46px}
+@keyframes flaskPulse{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.04)}}
+.loader-bubbles{position:absolute; inset:0; overflow:hidden; border-radius:28px; pointer-events:none}
+.loader-bubbles span{position:absolute; bottom:-10px; left:28%; width:8px; height:8px; border-radius:50%;
+  background:var(--yellow); opacity:.85; animation:lb 2.2s linear infinite}
+.loader-bubbles span:nth-child(2){left:62%; width:6px; height:6px; background:#fff; animation-delay:.7s}
+.loader-bubbles span:nth-child(3){left:45%; width:5px; height:5px; animation-delay:1.4s}
+@keyframes lb{from{transform:translateY(0); opacity:.95} to{transform:translateY(-92px); opacity:0}}
+.loader-card h2{font-size:1.35rem; line-height:1.15; color:var(--royal)}
+.loader-card h2 span{background:linear-gradient(transparent 60%, var(--yellow) 60%); color:var(--royal)}
+.loader-sub{font-size:.76rem; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin:6px 0 20px}
+.loader-bar{height:16px; background:var(--sky1); border:2px solid var(--line); border-radius:99px; overflow:hidden; margin-bottom:10px}
+#loaderFill{height:100%; width:0%; background:linear-gradient(90deg,var(--royal),var(--bright) 60%,var(--yellow)); border-radius:99px; transition:width .12s linear}
+.loader-row{display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:.84rem}
+#loaderPct{font-family:'Fredoka'; font-size:1.2rem; color:var(--royal); min-width:56px; text-align:left}
+#loaderMsg{color:var(--ink-soft); font-weight:700; text-align:right; flex:1}
+
+/* ---------- kerangka ---------- */
+.app{max-width:1280px; margin:0 auto; padding:14px 16px 40px}
+.topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  background:rgba(255,255,255,.86); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border:1.5px solid var(--line); border-radius:22px; padding:12px 16px;
+  box-shadow:var(--shadow), 0 0 30px rgba(46,111,224,.08)}
+.brand{display:flex; align-items:center; gap:12px}
+.brand-icon{width:46px;height:46px;border-radius:14px;color:#fff;display:grid;place-items:center;flex:none;
+  background:linear-gradient(180deg,#2B4CB0,var(--royal));
+  box-shadow:0 6px 16px rgba(30,58,138,.3), 0 0 0 3px rgba(255,207,51,.35)}
+.brand-icon svg{width:26px;height:26px}
+.brand h1{font-size:1.35rem; line-height:1.1; color:var(--royal)}
+.brand h1 span{background:linear-gradient(transparent 60%, var(--yellow) 60%)}
+.brand p{font-size:.78rem; font-weight:700; color:var(--ink-soft); letter-spacing:.04em; text-transform:uppercase}
+.topbar-actions{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.id-chip{display:inline-flex; align-items:center; gap:6px; background:var(--sky1); color:var(--royal);
+  font-weight:800; font-size:.76rem; border-radius:999px; padding:6px 12px; max-width:240px; border:1.5px solid var(--line)}
+.id-chip svg{width:14px;height:14px;flex:none;color:var(--bright)}
+.id-chip span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.lab-chip{display:inline-flex; align-items:center; gap:9px; background:#fff; border:2px solid var(--yellow);
+  border-radius:999px; padding:6px 13px; flex:none; box-shadow:0 4px 14px rgba(255,207,51,.28)}
+.lab-chip .lp-label{display:inline-flex; align-items:center; gap:5px; font-size:.72rem; font-weight:800;
+  color:var(--royal); text-transform:uppercase; letter-spacing:.04em}
+.lab-chip .lp-label svg{width:14px;height:14px;color:var(--yellow-deep)}
+.lp-bar{width:96px; height:10px; background:var(--sky1); border:1.5px solid var(--line); border-radius:99px; overflow:hidden}
+#labPFill{height:100%; width:0%; background:linear-gradient(90deg,var(--royal) 0%,var(--bright) 55%,var(--yellow) 100%); border-radius:99px; transition:width .6s ease}
+#labPct{font-family:'Fredoka'; font-size:.95rem; color:var(--royal); min-width:48px; text-align:right; line-height:1}
+.foot{text-align:center; font-size:.75rem; color:var(--ink-soft); font-weight:600; margin-top:22px}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; border-radius:14px; border:2px solid transparent;
+  font-weight:700; font-size:.9rem; padding:9px 15px; user-select:none; -webkit-user-select:none;
+  transition:transform .12s, box-shadow .18s, background .18s, filter .18s}
+.btn svg{width:17px;height:17px}
+.btn:active{transform:translateY(2px)}
+.btn.primary{background:var(--royal); color:#fff; box-shadow:0 4px 0 var(--royal-deep), 0 8px 20px rgba(30,58,138,.28)}
+.btn.primary:hover{background:var(--royal-deep); box-shadow:0 4px 0 #0F1E5E, 0 10px 26px rgba(30,58,138,.35)}
+.btn.primary:active{box-shadow:0 1px 0 #0F1E5E}
+.btn.blue{background:var(--bright); color:#fff; box-shadow:0 4px 0 var(--bright-deep), 0 8px 20px rgba(46,111,224,.28)}
+.btn.blue:hover{background:var(--bright-deep)}
+.btn.blue:active{box-shadow:0 1px 0 var(--bright-deep)}
+.btn.amber{background:var(--yellow); color:var(--royal-deep); border-color:var(--yellow-deep);
+  box-shadow:0 4px 0 var(--yellow-deep), 0 8px 20px rgba(255,207,51,.4)}
+.btn.amber:hover{filter:brightness(1.04)}
+.btn.amber:active{box-shadow:0 1px 0 var(--yellow-deep)}
+.btn.ghost{background:#fff; color:var(--royal); border-color:var(--line); box-shadow:0 2px 0 rgba(30,58,138,.08)}
+.btn.ghost:hover{background:var(--sky1); border-color:#A9C6EE}
+.btn:disabled{opacity:.45; cursor:not-allowed; transform:none !important}
+.btn.icon{padding:9px 10px}
+.btn.big{font-size:1.02rem; padding:12px 24px}
+
+/* ---------- stepper ---------- */
+.stepper{display:flex; gap:8px; overflow-x:auto; padding:12px 2px; position:sticky; top:0; z-index:40;
+  background:rgba(240,246,255,.9); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  scrollbar-width:none; border-bottom:1.5px solid rgba(207,224,247,.6)}
+.stepper::-webkit-scrollbar{display:none}
+.stepchip{flex:none; display:flex; align-items:center; gap:8px; background:#fff; border:2px solid var(--line);
+  border-radius:999px; padding:6px 12px 6px 6px; font-weight:700; font-size:.82rem; color:var(--ink-soft);
+  transition:border-color .15s, background .15s, transform .15s, box-shadow .15s}
+.stepchip .num{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--sky1);color:var(--royal);font-family:'Fredoka';font-size:.85rem;flex:none}
+.stepchip.locked{opacity:.55}
+.stepchip.active{border-color:var(--yellow); color:var(--royal); background:var(--yellow-soft);
+  box-shadow:0 4px 14px rgba(255,207,51,.35)}
+.stepchip.active .num{background:var(--yellow); color:var(--royal-deep)}
+.stepchip.done .num{background:var(--bright); color:#fff}
+.stepchip:not(.locked){cursor:pointer}
+.stepchip:not(.locked):hover{border-color:var(--bright); transform:translateY(-1px)}
+.stepchip svg{width:14px;height:14px}
+
+/* ---------- tata letak ---------- */
+.step-panel{margin-top:4px; scroll-margin-top:84px}
+.sim-layout{display:grid; grid-template-columns:minmax(0,1.55fr) minmax(310px,1fr); gap:18px; align-items:start; margin-top:16px}
+.sim-stage{min-width:0}
+@media (max-width:1000px){
+  .sim-layout{grid-template-columns:1fr}
+  .dock{display:grid !important; grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+}
+
+/* ---------- panggung ---------- */
+.safety-strip{display:flex; gap:10px; align-items:flex-start; background:var(--yellow-soft); border:2px solid var(--yellow);
+  color:#6B4B00; border-radius:14px; padding:10px 14px; font-size:.88rem; margin-bottom:12px; animation:pop .25s ease;
+  box-shadow:0 6px 16px rgba(255,207,51,.25)}
+.safety-strip svg{width:20px;height:20px;flex:none;margin-top:1px;color:var(--yellow-deep)}
+.scene-card{background:var(--paper); border:1.5px solid var(--line); border-radius:22px; padding:8px;
+  box-shadow:var(--shadow), 0 0 34px rgba(46,111,224,.10)}
+#scene{width:100%; height:auto; display:block; border-radius:14px}
+
+/* ---------- PANEL KONTROL ---------- */
+.dock{display:flex; flex-direction:column; gap:12px}
+.dock-group{position:relative; color:#EAF1FF; border-radius:18px; padding:13px;
+  background:linear-gradient(180deg,#22409C 0%,var(--royal) 55%,#182F78 100%);
+  border:1.5px solid #3B55B8; display:flex; flex-direction:column; gap:10px;
+  box-shadow:0 10px 26px rgba(22,41,122,.35), inset 0 1px 0 rgba(255,255,255,.12)}
+.dock-group.locked{opacity:.55}
+.dock-group.locked::after{content:''; position:absolute; inset:0; border-radius:16px; cursor:not-allowed}
+.dock-head{display:flex; align-items:center; gap:7px; font-weight:800; font-size:.85rem; color:#fff; text-transform:uppercase; letter-spacing:.05em}
+.dock-head svg{width:16px;height:16px;color:var(--yellow)}
+.dock-lock{margin-left:auto; display:inline-flex; align-items:center; gap:4px; font-size:.7rem;
+  background:rgba(255,255,255,.14); color:#CFE0FF; padding:3px 8px; border-radius:999px; font-weight:700}
+.dock-lock svg{width:11px;height:11px;color:#CFE0FF}
+.slider-row{display:flex; flex-direction:column; gap:4px; font-size:.8rem; font-weight:700; color:#B9CDF4}
+.slider-row output{color:#fff; font-size:.85rem}
+input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:99px; background:rgba(255,255,255,.22); outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:22px;height:22px;border-radius:50%;background:var(--yellow);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);cursor:grab}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--yellow);border:3px solid #fff;cursor:grab}
+.readout{display:flex; align-items:center; gap:10px; background:var(--navy); border:1.5px solid rgba(255,255,255,.12); border-radius:12px; padding:8px 12px}
+.lcd{font-family:ui-monospace,'Cascadia Mono',Consolas,monospace; font-size:1.35rem; font-weight:700; color:var(--yellow); letter-spacing:.05em}
+.readout-sub{font-size:.68rem; color:#8FA6D8; font-weight:700; text-transform:uppercase; line-height:1.2}
+.acid-choice{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.acid-btn{border:2px solid rgba(255,255,255,.28); background:rgba(255,255,255,.08); border-radius:12px; padding:8px 6px;
+  display:flex; align-items:center; justify-content:center; gap:6px; font-weight:700; font-size:.82rem; color:#CFE0FF; transition:.18s}
+.acid-btn svg{width:16px;height:16px}
+.acid-btn:hover{background:rgba(255,255,255,.16)}
+.acid-btn.sel{background:var(--yellow); border-color:var(--yellow); color:var(--royal-deep); box-shadow:0 4px 14px rgba(255,207,51,.45)}
+.acid-btn.sel svg{color:var(--royal-deep)}
+.dock-note{font-size:.76rem; color:#A9BFF0; font-weight:600}
+.bar{height:10px; background:rgba(255,255,255,.18); border-radius:99px; overflow:hidden}
+.bar>div{height:100%; width:0%; background:linear-gradient(90deg,var(--bright),var(--yellow)); border-radius:99px; transition:width .1s linear}
+.btn.hold{touch-action:none}
+
+/* ---------- panel tahapan ---------- */
+.step-card{display:none; background:var(--paper); border:1.5px solid var(--line); border-radius:22px;
+  box-shadow:var(--shadow); overflow:hidden; animation:pop .3s ease}
+.step-card.active{display:block}
+.step-head{display:flex; align-items:center; gap:12px; padding:14px 18px;
+  background:linear-gradient(90deg,var(--sky1),#F7FAFF); border-bottom:2px solid var(--line-soft)}
+.step-num{width:38px;height:38px;border-radius:12px;color:#fff;display:grid;place-items:center;
+  font-family:'Fredoka';font-size:1.05rem;flex:none;
+  background:linear-gradient(180deg,#2B4CB0,var(--royal)); box-shadow:0 4px 10px rgba(30,58,138,.3)}
+.step-head h2{font-size:1.08rem; line-height:1.15; color:var(--royal)}
+.step-head p{font-size:.75rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em}
+.step-body{padding:16px 18px 20px; display:flex; flex-direction:column; gap:14px}
+.step-body p.desc{font-size:.92rem; max-width:900px}
+ol.howto{padding-left:20px; display:flex; flex-direction:column; gap:5px; font-size:.9rem; max-width:900px}
+
+.obs-card{border:2px dashed var(--yellow); background:var(--yellow-soft); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:9px}
+.obs-row{display:flex; gap:10px; align-items:flex-start; font-size:.88rem}
+.obs-row b{flex:none; display:inline-flex; align-items:center; gap:6px; min-width:88px; color:#6B4B00}
+.obs-row svg{width:15px;height:15px;color:var(--yellow-deep)}
+textarea{width:100%; min-height:84px; border:2px solid var(--line); border-radius:12px; padding:10px 12px; font-size:.9rem; resize:vertical; background:#FCFDFF; transition:border-color .15s, box-shadow .15s}
+textarea:focus{border-color:var(--bright); box-shadow:var(--glow-blue)}
+textarea:focus,input:focus{outline:none; border-color:var(--bright)}
+input:focus{box-shadow:var(--glow-blue)}
+.charcount{font-size:.72rem; color:var(--ink-soft); text-align:right; font-weight:700}
+.hintbox{background:var(--yellow-soft); border:2px solid #F0D788; border-radius:12px; padding:10px 12px; font-size:.86rem; color:#6B4B00; animation:pop .25s ease; max-width:900px}
+.safety-mini{background:var(--yellow-soft); border:2px solid var(--yellow); border-radius:12px; padding:10px 12px; font-size:.85rem; color:#6B4B00; display:flex; gap:8px; max-width:900px}
+.safety-mini svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--yellow-deep)}
+.step-actions{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:2px}
+
+.obs-table{width:100%; border-collapse:separate; border-spacing:0 8px; font-size:.85rem}
+.obs-table th{font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); padding:0 8px; text-align:left}
+.obs-table th:not(:first-child){width:31%}
+.obs-table td{background:var(--sky1); padding:8px}
+.obs-table td:first-child{border-radius:12px 0 0 12px; font-weight:800; width:24%; color:var(--royal)}
+.obs-table td:last-child{border-radius:0 12px 12px 0}
+.chips{display:flex; flex-direction:column; gap:5px}
+.chip{border:2px solid var(--line); background:#fff; border-radius:10px; padding:5px 9px; text-align:left; font-size:.78rem; font-weight:600; color:var(--ink-soft); transition:.12s; line-height:1.3}
+.chip:hover{border-color:var(--bright)}
+.chip.sel{border-color:var(--bright); background:var(--sky1); color:var(--royal)}
+.chip.ok{border-color:var(--ok); background:var(--ok-bg); color:#0C6B45}
+.chip.bad{border-color:var(--err); background:var(--err-bg); color:#A33730}
+.chip:disabled{opacity:.55; cursor:default}
+.chip:disabled:hover{border-color:var(--line)}
+.row-done td{background:var(--ok-bg) !important}
+.hint-row td{background:transparent !important; padding:0 6px; border-radius:12px}
+.row-hint{font-size:.78rem; color:#A33730; background:var(--err-bg); border-radius:10px; padding:8px 10px; animation:pop .25s ease}
+@media (max-width:560px){ .obs-table,.obs-table tbody,.obs-table tr,.obs-table td,.obs-table th{display:block; width:100%}
+  .obs-table thead{display:none}
+  .obs-table tr{margin-bottom:12px; border:2px solid var(--line); border-radius:14px; background:var(--sky1)}
+  .obs-table td,.obs-table th{background:transparent !important; padding:5px 10px; border-radius:0 !important}
+  .obs-table th:not(:first-child){width:100%}
+  .hint-row td{padding:0} }
+
+#anWrap{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:12px}
+.qblock{border:1.5px solid var(--line); border-radius:14px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; background:#FCFDFF; transition:box-shadow .18s, border-color .18s}
+.qblock:hover{border-color:#A9C6EE; box-shadow:0 6px 18px rgba(46,111,224,.10)}
+.qblock .q{font-weight:700; font-size:.9rem; display:flex; gap:9px}
+.qblock .q .qn{flex:none; width:24px;height:24px;border-radius:8px;background:var(--royal);color:#fff;display:grid;place-items:center;font-size:.78rem;font-family:'Fredoka'}
+.hint-btn{align-self:flex-start; background:var(--yellow-soft); border:2px solid #F0D788; color:#6B4B00; border-radius:999px; padding:4px 12px; font-size:.76rem; font-weight:800; transition:background .15s}
+.hint-btn:hover{background:var(--yellow)}
+
+.dnd-area{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+@media (max-width:560px){.dnd-area{grid-template-columns:1fr}}
+.zone{border:2.5px dashed var(--line); border-radius:16px; padding:12px; min-height:150px; display:flex; flex-direction:column; gap:8px; transition:.15s; background:#FCFDFF}
+.zone.over{border-color:var(--yellow); background:var(--yellow-soft)}
+.zone h3{font-size:.95rem; display:flex; align-items:center; gap:8px; color:var(--royal)}
+.zone h3 .dot{width:14px;height:14px;border-radius:5px;flex:none}
+.zone.phys h3 .dot{background:var(--bright)} .zone.chem h3 .dot{background:var(--err)}
+.zone .placeholder{font-size:.78rem; color:#9DB8CF; font-weight:600; text-align:center; padding:14px 4px}
+.rack{border:2px dashed var(--line); border-radius:16px; padding:12px; display:flex; flex-wrap:wrap; gap:8px; background:var(--gray-lite); min-height:64px}
+.dcard{background:#fff; border:2px solid var(--line); border-radius:12px; padding:8px 12px; font-size:.82rem; font-weight:700; color:var(--ink);
+  box-shadow:0 2px 0 rgba(30,58,138,.10); touch-action:none; user-select:none; -webkit-user-select:none; cursor:grab; max-width:100%; transition:box-shadow .12s}
+.dcard:hover{box-shadow:0 4px 0 rgba(30,58,138,.16)}
+.dcard.dragging{opacity:.35}
+.dcard.correct{border-color:var(--ok); background:var(--ok-bg); color:#0C6B45; cursor:default}
+.dcard.wrong{animation:shake .45s ease; border-color:var(--err); background:var(--err-bg)}
+.dcard-ghost{position:fixed; z-index:200; pointer-events:none; transform:rotate(2deg) scale(1.04); box-shadow:0 10px 24px rgba(30,58,138,.3); margin:0}
+.dnd-msg{border-radius:12px; padding:10px 12px; font-size:.86rem; font-weight:600; animation:pop .25s ease}
+.dnd-msg.good{background:var(--ok-bg); color:#0C6B45; border:2px solid #9BDCC0}
+.dnd-msg.retry{background:var(--yellow-soft); color:#6B4B00; border:2px solid #F0D788}
+
+/* ---------- drawer ---------- */
+.drawer-backdrop{position:fixed; inset:0; background:rgba(20,36,95,.45); z-index:90; opacity:0; pointer-events:none; transition:.25s; backdrop-filter:blur(3px)}
+.drawer{position:fixed; top:0; right:0; height:100dvh; width:min(560px,100vw); background:var(--paper); z-index:95; transform:translateX(105%); transition:transform .3s cubic-bezier(.2,.8,.25,1);
+  border-left:3px solid var(--line); display:flex; flex-direction:column; box-shadow:-14px 0 40px rgba(30,58,138,.25)}
+body.drawer-open .drawer-backdrop{opacity:1; pointer-events:auto}
+body.drawer-open .drawer{transform:none}
+.drawer-head{display:flex; align-items:center; gap:10px; padding:14px 18px; background:linear-gradient(90deg,var(--sky1),#F7FAFF); border-bottom:2px solid var(--line-soft)}
+.drawer-head h2{font-size:1.05rem; flex:1; color:var(--royal)}
+.drawer-body{flex:1; overflow-y:auto; padding:16px 18px 40px; display:flex; flex-direction:column; gap:14px}
+.lkpd-sec{border:1.5px solid var(--line); border-radius:14px; padding:12px 14px; background:#fff}
+.lkpd-sec h3{font-size:.92rem; color:var(--royal); margin-bottom:6px}
+.lkpd-sec .fix{font-size:.85rem; background:var(--sky1); border-radius:10px; padding:8px 10px}
+.lkpd-sec .ans{font-size:.88rem; white-space:pre-wrap}
+.lkpd-sec textarea{min-height:60px}
+.reg-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px}
+@media(max-width:480px){.reg-grid{grid-template-columns:1fr}}
+.reg-item{background:var(--gray-lite); border:1.5px solid var(--line); border-radius:10px; padding:6px 10px}
+.reg-item span{display:block; font-size:.66rem; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em}
+.reg-item b{font-size:.86rem; overflow-wrap:anywhere}
+.sync-note{display:inline-flex; align-items:center; gap:6px; font-size:.7rem; font-weight:800; color:var(--ink-soft);
+  background:var(--gray-lite); border:1.5px solid var(--line); border-radius:999px; padding:3px 10px; margin-bottom:8px}
+.sync-note svg{width:12px;height:12px;color:var(--ok)}
+.trial-table{width:100%; border-collapse:collapse; font-size:.8rem}
+.trial-table th{background:var(--royal); color:#fff; padding:7px 8px; text-align:left; font-size:.7rem; text-transform:uppercase; letter-spacing:.04em}
+.trial-table td{border:1.5px solid var(--line); padding:7px 8px; background:#fff}
+.trial-empty{font-size:.86rem; color:var(--ink-soft); text-align:center; padding:18px 8px; border:2px dashed var(--line); border-radius:12px; font-weight:600}
+.class-tag{display:inline-block; background:var(--sky1); border:1.5px solid var(--line); border-radius:999px;
+  padding:4px 11px; font-weight:700; font-size:.76rem; color:var(--royal); margin:0 6px 6px 0}
+.class-tag.chem{border-color:#F3C1BD; background:var(--err-bg); color:#A33730}
+.lkpd-status{background:var(--sky1); border:1.5px solid var(--line); border-radius:14px; padding:10px 12px}
+.lkpd-status>b{display:block; font-size:.8rem; color:var(--royal); margin-bottom:7px}
+.sync-chips{display:flex; flex-wrap:wrap; gap:6px}
+.sync-chip{display:inline-flex; align-items:center; gap:5px; font-size:.72rem; font-weight:800; color:var(--ink-soft);
+  background:#fff; border:1.5px solid var(--line); border-radius:999px; padding:4px 10px}
+.sync-chip svg{width:13px;height:13px}
+.sync-chip.on{background:var(--ok-bg); border-color:#9BDCC0; color:#0C6B45}
+
+/* ---------- modal ---------- */
+.modal-backdrop{position:fixed; inset:0; background:rgba(20,36,95,.5); z-index:120; display:grid; place-items:center; padding:18px; opacity:0; pointer-events:none; transition:.2s; backdrop-filter:blur(4px)}
+.modal-backdrop.open{opacity:1; pointer-events:auto}
+.modal{background:var(--paper); border:1.5px solid var(--line); border-radius:24px; max-width:560px; width:100%; max-height:88vh; overflow-y:auto; padding:24px;
+  box-shadow:0 20px 50px rgba(30,58,138,.35), 0 0 0 4px rgba(46,111,224,.08); position:relative; transform:scale(.92); transition:.2s}
+.modal-backdrop.open .modal{transform:none}
+.modal h2{font-size:1.3rem; margin-bottom:8px; color:var(--royal)}
+.modal .m-sub{font-size:.78rem; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin:-4px 0 14px}
+.modal .close-x{position:absolute; top:12px; right:12px; background:var(--sky1); border:none; width:34px;height:34px;border-radius:10px; display:grid;place-items:center; color:var(--royal); transition:background .15s}
+.modal .close-x svg{width:18px;height:18px}
+.modal .close-x:hover{background:var(--yellow); color:var(--royal-deep)}
+.zoom-modal{max-width:480px; text-align:center}
+.zoom-modal h2{justify-content:center; display:flex; align-items:center; gap:10px}
+.lens-wrap{display:grid; place-items:center; margin:12px 0}
+#zoomCanvas{border-radius:50%; border:6px solid var(--royal); box-shadow:0 8px 0 rgba(30,58,138,.2), inset 0 0 0 3px #fff, 0 0 30px rgba(46,111,224,.25); background:#FBF6E7; max-width:min(340px,80vw); height:auto}
+.zoom-meta{display:flex; justify-content:center; gap:10px; align-items:center; font-size:.8rem; font-weight:800; color:var(--ink-soft)}
+.zoom-phase{margin-top:10px; background:var(--sky1); border-radius:12px; padding:10px 14px; font-size:.86rem; font-weight:600}
+.final-bubbles{position:absolute; inset:0; overflow:hidden; border-radius:24px; pointer-events:none}
+.final-bubbles span{position:absolute; bottom:-30px; width:14px; height:14px; border-radius:50%; background:rgba(46,111,224,.18); animation:rise 5s linear infinite}
+.final-badge{width:64px;height:64px;border-radius:20px;background:var(--yellow);color:var(--royal-deep);display:grid;place-items:center;margin:0 auto 10px; box-shadow:0 10px 24px rgba(255,207,51,.5)}
+.final-badge svg{width:34px;height:34px}
+.final-quote{background:var(--sky1); border-radius:14px; padding:14px 16px; font-family:'Fredoka'; font-size:1.02rem; color:var(--royal); margin:12px 0}
+
+.goal-quote{background:var(--sky1); border-left:4px solid var(--bright); border-radius:12px; padding:12px 14px; font-size:.9rem; margin-bottom:14px}
+.goal-quote b{color:var(--royal)}
+.g-list{display:flex; flex-direction:column; gap:10px; margin-bottom:14px}
+.g-item{display:flex; gap:10px; align-items:flex-start}
+.g-item .gi{flex:none; width:30px; height:30px; border-radius:10px; background:var(--sky1); color:var(--royal);
+  display:grid; place-items:center; font-family:'Fredoka'; font-weight:700; font-size:.88rem}
+.g-item .gi svg{width:15px;height:15px;color:var(--bright)}
+.g-item .gi.ok{background:var(--yellow); color:var(--royal-deep)}
+.g-item .gi.ok svg{color:var(--royal-deep)}
+.g-item p{font-size:.88rem}
+.g-item p b{color:var(--royal)}
+.m-note{display:flex; gap:8px; background:var(--yellow-soft); border:2px solid var(--yellow); color:#6B4B00; padding:10px 12px; border-radius:12px; font-size:.85rem}
+.m-note svg{width:18px;height:18px;flex:none;margin-top:1px;color:var(--yellow-deep)}
+.m-sec-title{font-size:.8rem; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin:14px 0 8px}
+.flow{display:flex; flex-wrap:wrap; gap:8px}
+.fchip{display:inline-flex; align-items:center; gap:6px; background:#fff; border:2px solid var(--line); color:var(--royal);
+  border-radius:999px; padding:5px 11px; font-weight:800; font-size:.75rem}
+.fchip b{color:var(--bright); font-family:'Fredoka'}
+.fchip svg{width:13px;height:13px}
+
+.ref-list{list-style:none; counter-reset:ref; display:flex; flex-direction:column; gap:9px; margin-bottom:12px; padding:0}
+.ref-list li{counter-increment:ref; position:relative; padding-left:34px; font-size:.85rem; line-height:1.55}
+.ref-list li::before{content:counter(ref); position:absolute; left:0; top:1px; width:24px; height:24px; border-radius:8px;
+  background:var(--royal); color:#fff; font-family:'Fredoka'; font-weight:700; font-size:.78rem; display:grid; place-items:center}
+.ref-list li b{color:var(--royal)}
+
+.dev-card{display:flex; gap:12px; align-items:center; background:var(--sky1); border-radius:14px; padding:12px 14px; margin-bottom:6px}
+.dev-logo{width:48px;height:48px;border-radius:14px;color:#fff;display:grid;place-items:center;flex:none;
+  background:linear-gradient(180deg,#2B4CB0,var(--royal)); box-shadow:0 6px 14px rgba(30,58,138,.3)}
+.dev-logo svg{width:26px;height:26px}
+.dev-card b{display:block; font-size:.95rem; color:var(--royal)}
+.dev-card span{font-size:.75rem; font-weight:700; color:var(--ink-soft)}
+.dev-tech{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:4px}
+.dev-tech span{background:#fff; border:2px solid var(--line); border-radius:999px; padding:4px 11px; font-weight:800; font-size:.74rem; color:var(--royal)}
+.dev-people{display:flex; flex-direction:column; gap:8px}
+.dev-person{display:flex; gap:10px; align-items:center; background:var(--gray-lite); border:1.5px solid var(--line); border-radius:12px; padding:9px 12px}
+.dev-person svg{width:18px;height:18px;color:var(--bright);flex:none}
+.dev-person b{display:block; font-size:.87rem}
+.dev-person span{font-size:.75rem; color:var(--ink-soft); font-weight:600}
+
+/* ---------- KONTROL SUARA & LAYAR PENUH (melayang, responsif) ---------- */
+.snd-cluster{position:fixed; right:16px; bottom:16px; z-index:640; display:flex; flex-direction:column; align-items:flex-end; gap:8px}
+.snd-btns{display:flex; gap:8px}
+.snd-btn{width:46px;height:46px;border-radius:50%;border:2px solid var(--line);background:rgba(255,255,255,.92);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:var(--royal); display:grid; place-items:center;
+  box-shadow:var(--shadow); transition:transform .12s, box-shadow .18s, background .18s, border-color .18s}
+.snd-btn:hover{border-color:var(--bright); box-shadow:var(--glow-blue); transform:translateY(-2px)}
+.snd-btn:active{transform:translateY(0)}
+.snd-btn svg{width:21px;height:21px}
+.snd-btn.muted-state{background:var(--yellow); border-color:var(--yellow-deep); color:var(--royal-deep)}
+.snd-pop{width:min(280px, calc(100vw - 32px)); background:rgba(255,255,255,.96);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border:1.5px solid var(--line); border-radius:18px; padding:14px;
+  box-shadow:0 16px 36px rgba(30,58,138,.28); display:flex; flex-direction:column; gap:12px; animation:pop .2s ease}
+.snd-row{display:flex; flex-direction:column; gap:5px}
+.snd-row .snd-label{display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:.76rem; font-weight:800; color:var(--royal)}
+.snd-row .snd-label span{display:inline-flex; align-items:center; gap:6px}
+.snd-row .snd-label svg{width:14px;height:14px;color:var(--bright)}
+.snd-row output{font-family:'Fredoka'; color:var(--royal); font-size:.78rem}
+.snd-row input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:99px;
+  background:var(--sky1); border:1px solid var(--line); outline:none}
+.snd-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:20px;height:20px;border-radius:50%;
+  background:var(--yellow); border:3px solid #fff; box-shadow:0 1px 6px rgba(0,0,0,.25); cursor:pointer}
+.snd-row input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--yellow);border:3px solid #fff;cursor:pointer}
+.snd-pop .btn{width:100%}
+@media (max-width:480px){ .snd-btn{width:42px;height:42px} .snd-cluster{right:12px; bottom:12px} }
+
+/* ---------- HALAMAN UTAMA ---------- */
+.home{position:fixed; inset:0; z-index:500; overflow-y:auto; display:grid; place-items:center; padding:20px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='60' viewBox='0 0 140 60'%3E%3Cg fill='none' stroke='%232E6FE0' stroke-opacity='.08' stroke-width='2'%3E%3Cpath d='M0 15 Q 17.5 5 35 15 T 70 15 T 105 15 T 140 15'/%3E%3Cpath d='M0 45 Q 17.5 35 35 45 T 70 45 T 105 45 T 140 45'/%3E%3C/g%3E%3C/svg%3E") repeat,
+    linear-gradient(180deg,#FFFFFF 0%,var(--sky1) 28%,var(--sky2) 64%,#8FB9EE 100%)}
+.home-view{display:none; width:100%; max-width:820px; margin:auto}
+.home-view.active{display:block; animation:pop .3s ease}
+
+/* ===== HEADER LOGO DI ATAS KOTAK MENU (Halaman Utama) ===== */
+.home-logos{display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px;
+  margin:0 auto 14px; position:relative; z-index:1}
+.logo-item{background:#fff; border:1.5px solid var(--line); border-radius:14px; padding:6px 10px;
+  box-shadow:0 4px 0 rgba(30,58,138,.08); display:grid; place-items:center;
+  transition:transform .15s, box-shadow .18s, border-color .15s}
+.logo-item:hover{transform:translateY(-2px); border-color:var(--bright); box-shadow:var(--glow-blue)}
+.logo-item img{height:46px; width:auto; max-width:130px; object-fit:contain; display:block}
+
+.home-card{background:rgba(255,255,255,.9); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border:1.5px solid rgba(255,255,255,.9); outline:1.5px solid var(--line); outline-offset:-1px;
+  border-radius:28px; padding:28px 26px 22px;
+  box-shadow:0 20px 44px rgba(30,58,138,.22), 0 0 50px rgba(46,111,224,.14);
+  position:relative; overflow:hidden}
+.home-brand{display:flex; align-items:center; gap:14px; position:relative; z-index:1}
+.home-brand .brand-icon{width:54px;height:54px}
+.home-brand h2{font-size:1.5rem; line-height:1.15; color:var(--royal)}
+.home-brand h2 span{background:linear-gradient(transparent 60%, var(--yellow) 60%)}
+.home-sub{font-size:.78rem; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin:6px 0 4px; padding-left:68px; position:relative; z-index:1}
+.home-tag{font-size:.9rem; color:var(--ink-soft); font-weight:600; padding-left:68px; margin-bottom:18px; position:relative; z-index:1}
+.home-menu{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; position:relative; z-index:1}
+@media (max-width:680px){ .home-menu{grid-template-columns:1fr}
+  .home-sub,.home-tag{padding-left:0} }
+.menu-card{position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:8px; text-align:left;
+  background:#fff; border:2px solid var(--line); border-radius:18px; padding:16px 16px 14px; cursor:pointer;
+  box-shadow:0 4px 0 rgba(30,58,138,.08); transition:transform .15s, box-shadow .18s, border-color .15s; font-family:inherit; color:var(--ink)}
+.menu-card:hover{transform:translateY(-3px); border-color:var(--bright); box-shadow:var(--glow-blue)}
+.menu-card:active{transform:translateY(0)}
+.menu-card .mc-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;flex:none;
+  background:linear-gradient(180deg,#2B4CB0,var(--royal)); box-shadow:0 6px 14px rgba(30,58,138,.28)}
+.menu-card .mc-icon svg{width:24px;height:24px}
+.menu-card h3{font-size:1rem; line-height:1.2; color:var(--royal)}
+.menu-card p{font-size:.78rem; color:var(--ink-soft); font-weight:600; line-height:1.4}
+.menu-card .mc-arrow{position:absolute; top:14px; right:14px; width:18px; height:18px; color:#9DB8CF; transition:.15s}
+.menu-card:hover .mc-arrow{color:var(--bright); transform:translateX(2px)}
+.menu-card.go{background:linear-gradient(180deg,#FFDA5C,var(--yellow)); border-color:var(--yellow-deep);
+  box-shadow:0 4px 0 var(--yellow-deep), var(--glow-yellow)}
+.menu-card.go:hover{box-shadow:0 8px 20px rgba(227,168,0,.45), var(--glow-yellow)}
+.menu-card.go:active{box-shadow:0 2px 0 var(--yellow-deep)}
+.menu-card.go .mc-icon{background:var(--royal); box-shadow:0 6px 14px rgba(30,58,138,.35)}
+.menu-card.go h3{color:var(--royal-deep)}
+.menu-card.go p{color:#6B4B00}
+.menu-card.go .mc-arrow{color:var(--royal-deep)}
+.menu-card.go:hover .mc-arrow{transform:translateX(2px); color:var(--royal-deep)}
+.home-flow{margin-top:14px; position:relative; z-index:1}
+.home-note{text-align:center; font-size:.74rem; color:var(--ink-soft); margin-top:12px; font-weight:600; position:relative; z-index:1}
+
+.subhead{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  margin-bottom:14px; position:relative; z-index:1}
+.subhead h2{font-size:1.35rem; display:flex; align-items:center; gap:10px; color:var(--royal)}
+.subhead h2 .mh-icon{width:40px;height:40px;border-radius:12px;color:#fff;display:grid;place-items:center;flex:none;
+  background:linear-gradient(180deg,#2B4CB0,var(--royal)); box-shadow:0 5px 12px rgba(30,58,138,.28)}
+.subhead h2 .mh-icon svg{width:20px;height:20px}
+.subhead .m-sub{font-size:.72rem; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em}
+.btn.back{background:var(--sky1); color:var(--royal); border-color:transparent; box-shadow:0 2px 0 rgba(30,58,138,.12)}
+.btn.back:hover{background:var(--sky2)}
+
+.reg-form{display:flex; flex-direction:column; gap:12px; position:relative; z-index:1}
+.reg-row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+@media(max-width:560px){.reg-row{grid-template-columns:1fr}}
+.field{display:flex; flex-direction:column; gap:5px}
+.field label{font-size:.78rem; font-weight:800; color:var(--royal)}
+.field label .req{color:var(--err)}
+.field label .opt{color:var(--ink-soft); font-weight:700; font-size:.7rem}
+.field input{border:2px solid var(--line); border-radius:12px; padding:10px 12px; font-size:.92rem; background:#FCFDFF; transition:border-color .15s, box-shadow .15s}
+.field input:focus{outline:none; border-color:var(--bright); box-shadow:var(--glow-blue)}
+.field input.err{border-color:var(--err); background:var(--err-bg)}
+.reg-note{font-size:.76rem; color:var(--ink-soft); font-weight:600; display:flex; align-items:center; gap:6px}
+.reg-note svg{width:14px;height:14px;flex:none;color:var(--bright)}
+
+#toasts{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:600; display:flex; flex-direction:column; gap:8px; width:min(420px,calc(100vw - 28px))}
+.toast{background:var(--royal); color:#fff; border-radius:12px; padding:10px 14px; font-size:.85rem; font-weight:600;
+  box-shadow:0 10px 26px rgba(30,58,138,.4); animation:pop .25s ease; border:1.5px solid rgba(255,255,255,.15)}
+.toast.warn{background:#8A5A00} .toast.ok{background:#146B48}
+@media (max-width:640px){ #toasts{bottom:76px} }
+
+@keyframes pop{from{opacity:0; transform:translateY(6px) scale(.97)} to{opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+@keyframes rise{from{transform:translateY(0); opacity:.9} to{transform:translateY(-110vh); opacity:0}}
+@keyframes steamUp{0%{transform:translateY(6px); opacity:0} 35%{opacity:.75} 100%{transform:translateY(-16px); opacity:0}}
+@keyframes dropFall{0%{transform:translateY(0); opacity:1} 80%{opacity:1} 100%{transform:translateY(50px); opacity:0}}
+@keyframes bubbleUp{0%{transform:translateY(0); opacity:.8} 100%{transform:translateY(-46px); opacity:0}}
+@keyframes spoonStir{from{transform:rotate(-13deg)} to{transform:rotate(13deg)}}
+@keyframes floaty{from{transform:translateY(-2px)} to{transform:translateY(2px)}}
+@keyframes pulseRing{0%{opacity:.9; transform:scale(.98)} 70%{opacity:0; transform:scale(1.06)} 100%{opacity:0}}
+
+.steam-p{animation:steamUp 2.4s ease-out infinite}
+.steam-p:nth-child(2){animation-delay:.8s} .steam-p:nth-child(3){animation-delay:1.6s}
+.drop-anim{animation:dropFall .5s ease-in forwards}
+.bub{animation:bubbleUp 1.7s linear infinite}
+.bub:nth-child(2){animation-delay:.5s} .bub:nth-child(3){animation-delay:.9s} .bub:nth-child(4){animation-delay:1.3s}
+#spoon{transform-box:view-box; transform-origin:500px 158px}
+#spoon.stirring{animation:spoonStir .8s ease-in-out infinite alternate}
+#pipet{transform-box:view-box; transform-origin:640px 96px; transition:transform .45s ease}
+#pipet.pouring{transform:translate(-160px,14px) rotate(-22deg)}
+.curd{opacity:0; transition:opacity .7s ease}
+.curd.show{opacity:1}
+.curd ellipse{transform-box:fill-box; transform-origin:center; animation:floaty 3.2s ease-in-out infinite alternate}
+#beakerPulse{transform-box:fill-box; transform-origin:center}
+#beakerPulse.on{animation:pulseRing 1.6s ease-out infinite}
+.clickable{cursor:pointer; transition:filter .15s}
+.clickable:hover{filter:brightness(1.06) drop-shadow(0 4px 10px rgba(46,111,224,.35))}
+
+/* =========================================================
+   LEMBAR CETAK LKPD — A4 PORTRAIT PROFESIONAL
+   ========================================================= */
+.print-area{display:none}
+@media print{
+  @page{ size:A4 portrait; margin:16mm 14mm 18mm }
+  html,body{ background:#fff !important; height:auto !important; min-height:0 !important;
+    overflow:visible !important; margin:0 !important; padding:0 !important }
+  body > *:not(#printArea){ display:none !important }
+  #printArea{
+    display:block !important; position:static !important;
+    width:100% !important; max-width:100% !important;
+    margin:0 !important; padding:0 !important;
+    background:#fff !important;
+    font-family:'Plus Jakarta Sans',Arial,Helvetica,sans-serif;
+    font-size:11pt; line-height:1.45; color:#1a1a1a;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .pr-title{ font-size:15pt; font-weight:800; text-align:center; margin:0 0 2pt; color:#1E3A8A }
+  .pr-sub{ text-align:center; font-size:9.5pt; color:#444; margin:0 0 4pt }
+  .pr-rule{ border:none; border-top:2.5px solid #1E3A8A; margin:6pt 0 9pt }
+  .pr-id{ width:100%; max-width:100%; table-layout:fixed; border-collapse:collapse; margin:0 0 10pt; font-size:10.5pt }
+  .pr-id th{ width:30%; text-align:left; background:#EAF3FE; border:1px solid #A9C6EE; padding:4.5pt 7pt;
+    font-weight:700; color:#1E3A8A; overflow-wrap:break-word }
+  .pr-id td{ border:1px solid #A9C6EE; padding:4.5pt 7pt; overflow-wrap:break-word; word-wrap:break-word }
+  .pr-sec{ border:1px solid #9DB4CF; border-radius:6pt; padding:8pt 10pt; margin:0 0 10pt; background:#fff;
+    break-inside:avoid; page-break-inside:avoid }
+  .pr-sec.pr-flow{ break-inside:auto; page-break-inside:auto }
+  .pr-sec h3{ font-size:11.5pt; margin:0 0 4pt; color:#1E3A8A; break-after:avoid; page-break-after:avoid }
+  .pr-fix{ background:#F4F7FB; border:1px solid #C9DEEF; border-radius:4pt; padding:4pt 7pt; font-size:10.5pt }
+  .pr-ans{ font-size:10.5pt; white-space:pre-wrap; overflow-wrap:break-word; word-wrap:break-word }
+  .pr-table{ width:100%; max-width:100%; table-layout:fixed; border-collapse:collapse; font-size:9.8pt }
+  .pr-table thead{ display:table-header-group }
+  .pr-table tr{ break-inside:avoid; page-break-inside:avoid }
+  .pr-table th{ background:#E4EFFC; border:1px solid #7E97B8; padding:4.5pt 6pt; text-align:left;
+    font-size:9.3pt; text-transform:uppercase; letter-spacing:.3pt; color:#1E3A8A;
+    overflow-wrap:break-word; word-wrap:break-word }
+  .pr-table td{ border:1px solid #7E97B8; padding:5pt 6pt; vertical-align:top;
+    overflow-wrap:break-word; word-wrap:break-word }
+  .pr-table td b{ color:#1E3A8A }
+  .pr-q{ margin:0 0 8pt; break-inside:avoid; page-break-inside:avoid }
+  .pr-q b{ display:block; font-size:10.5pt; margin-bottom:2.5pt; break-after:avoid; page-break-after:avoid }
+  .pr-a{ border-left:2.5px solid #8FA8BC; padding:1.5pt 8pt; font-size:10.5pt;
+    overflow-wrap:break-word; word-wrap:break-word }
+  .pr-a .pr-empty{ color:#888 }
+  .pr-kv{ width:100%; max-width:100%; table-layout:fixed; border-collapse:collapse; font-size:10pt }
+  .pr-kv th{ width:38%; text-align:left; background:#F4F7FB; border:1px solid #A9C6EE; padding:4pt 7pt;
+    color:#1E3A8A; font-weight:700; overflow-wrap:break-word }
+  .pr-kv td{ border:1px solid #A9C6EE; padding:4pt 7pt; overflow-wrap:break-word; word-wrap:break-word }
+  .pr-tags{ font-size:10pt }
+  .pr-tag{ display:inline-block; border:1px solid #A9C6EE; border-radius:3pt; padding:1.5pt 6pt;
+    margin:0 4pt 4pt 0; font-size:9.3pt; background:#F4F7FB; break-inside:avoid }
+  .pr-tag.chem{ border-color:#D9A29C; background:#FCEBEA }
+  .pr-foot{ margin-top:10pt; padding-top:5pt; border-top:1px dashed #999; font-size:8.5pt; color:#666; text-align:center;
+    break-inside:avoid; page-break-inside:avoid }
+}
+</style>
+</head>
+<body class="loading-open">
+
+<!-- ===================== 1. LOADING PAGE (0% → 100%) — background loading.jpg ===================== -->
+<div class="loader" id="loader">
+  <div class="loader-card">
+    <div class="loader-flask">
+      <i data-lucide="flask-conical"></i>
+      <div class="loader-bubbles"><span></span><span></span><span></span></div>
+    </div>
+    <h2>Lab Maya <span>· Susu Menjadi Dadih</span></h2>
+    <p class="loader-sub">IPA · Kelas VII · Perubahan Zat</p>
+    <div class="loader-bar"><div id="loaderFill"></div></div>
+    <div class="loader-row">
+      <b id="loaderPct">0%</b>
+      <span id="loaderMsg">Menghidupkan laboratorium virtual…</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 2. HALAMAN UTAMA ===================== -->
+<div class="home hidden" id="home">
+
+  <div class="home-view active" id="viewMenu">
+
+    <!-- ===== HEADER LOGO DI ATAS KOTAK MENU (logo-1 s/d logo-4, tinggi 46px = ukuran ikon Lab Maya) ===== -->
+    <div class="home-logos" aria-label="Logo institusi">
+      <div class="logo-item"><img src="logo-1.jpg" alt="Logo 1" onerror="this.parentElement.style.display='none'"></div>
+      <div class="logo-item"><img src="logo-2.jpg" alt="Logo 2" onerror="this.parentElement.style.display='none'"></div>
+      <div class="logo-item"><img src="logo-3.jpg" alt="Logo 3" onerror="this.parentElement.style.display='none'"></div>
+      <div class="logo-item"><img src="logo-4.jpg" alt="Logo 4" onerror="this.parentElement.style.display='none'"></div>
+    </div>
+
+    <div class="home-card">
+      <div class="final-bubbles">
+        <span style="left:8%;animation-delay:0s"></span><span style="left:26%;animation-delay:1.4s;width:10px;height:10px"></span>
+        <span style="left:47%;animation-delay:.7s;width:18px;height:18px"></span><span style="left:66%;animation-delay:2s"></span>
+        <span style="left:85%;animation-delay:1s;width:11px;height:11px"></span>
+      </div>
+
+      <div class="home-brand">
+        <div class="brand-icon"><i data-lucide="flask-conical"></i></div>
+        <h2>Lab Maya <span>· Susu Menjadi Dadih</span></h2>
+      </div>
+      <p class="home-sub">IPA · Kelas VII · Materi Perubahan Zat</p>
+      <p class="home-tag">Jadilah peneliti muda: amati, bereksperimen, dan temukan sendiri mengapa susu bisa berubah menjadi dadih!</p>
+
+      <nav class="home-menu" aria-label="Menu Halaman Utama">
+        <button class="menu-card" id="menuTujuan" type="button">
+          <span class="mc-icon"><i data-lucide="target"></i></span>
+          <i data-lucide="chevron-right" class="mc-arrow"></i>
+          <h3>Tujuan Pembelajaran</h3>
+          <p>Apa yang akan kamu pelajari dan capai melalui eksperimen ini.</p>
+        </button>
+
+        <button class="menu-card" id="menuPanduan" type="button">
+          <span class="mc-icon"><i data-lucide="book-open"></i></span>
+          <i data-lucide="chevron-right" class="mc-arrow"></i>
+          <h3>Panduan Penggunaan</h3>
+          <p>Cara menggunakan lab maya, dari tahap awal hingga kesimpulan.</p>
+        </button>
+
+        <button class="menu-card go" id="menuMasuk" type="button">
+          <span class="mc-icon"><i data-lucide="flask-conical"></i></span>
+          <i data-lucide="chevron-right" class="mc-arrow"></i>
+          <h3>Masuk ke Laboratorium</h3>
+          <p>Registrasi peneliti, lalu mulai eksperimen.</p>
+        </button>
+      </nav>
+
+      <div class="home-flow flow" aria-hidden="true">
+        <span class="fchip"><b>1</b>Prediksi</span>
+        <span class="fchip"><b>2</b>Eksperimen</span>
+        <span class="fchip"><b>3</b>Observasi</span>
+        <span class="fchip"><b>4</b>LKPD</span>
+        <span class="fchip"><b>5</b>Analisis</span>
+        <span class="fchip"><b>6</b>Kesimpulan</span>
+      </div>
+      <p class="home-note">Dapat digunakan di laptop maupun smartphone · Sesuai alur inkuiri &amp; Pembelajaran Mendalam</p>
+    </div>
+  </div>
+
+  <div class="home-view" id="viewTujuan">
+    <div class="home-card">
+      <div class="subhead">
+        <div>
+          <p class="m-sub">Halaman Utama › Tujuan Pembelajaran</p>
+          <h2><span class="mh-icon"><i data-lucide="target"></i></span> Tujuan Pembelajaran</h2>
+        </div>
+        <button class="btn back" data-back type="button"><i data-lucide="arrow-left"></i> Kembali</button>
+      </div>
+
+      <div class="goal-quote">
+        <b>Tujuan Umum:</b> Peserta didik mampu mengamati perubahan zat yang terjadi pada susu setelah diberikan
+        perlakuan berupa <b>pemanasan</b> dan <b>penambahan cuka atau air jeruk</b>, kemudian menganalisis apakah
+        perubahan tersebut termasuk <b>perubahan fisika</b> atau <b>perubahan kimia</b> berdasarkan bukti hasil eksperimen.
+      </div>
+
+      <p class="m-sec-title">Tujuan Khusus — setelah eksperimen, kamu dapat:</p>
+      <div class="g-list">
+        <div class="g-item"><span class="gi ok"><i data-lucide="check"></i></span>
+          <p><b>Mengamati kondisi awal</b> susu: warna, tekstur, aroma, dan wujud zatnya.</p></div>
+        <div class="g-item"><span class="gi ok"><i data-lucide="check"></i></span>
+          <p><b>Melakukan perlakuan</b> berupa pemanasan dan penambahan bahan asam secara bertahap.</p></div>
+        <div class="g-item"><span class="gi ok"><i data-lucide="check"></i></span>
+          <p><b>Mengidentifikasi bukti perubahan:</b> gumpalan dadih, pemisahan cairan (whey), dan perubahan aroma.</p></div>
+        <div class="g-item"><span class="gi ok"><i data-lucide="check"></i></span>
+          <p><b>Menjelaskan penyebabnya:</b> asam membuat protein kasein dalam susu menggumpal (koagulasi).</p></div>
+        <div class="g-item"><span class="gi ok"><i data-lucide="check"></i></span>
+          <p><b>Mengklasifikasikan</b> perubahan fisika atau kimia berdasarkan bukti, lalu <b>menyusun kesimpulan</b> sendiri.</p></div>
+      </div>
+
+      <p class="m-sec-title">Alur Belajarmu</p>
+      <div class="flow">
+        <span class="fchip"><b>1</b>Prediksi</span>
+        <span class="fchip"><b>2</b>Eksperimen</span>
+        <span class="fchip"><b>3</b>Observasi</span>
+        <span class="fchip"><b>4</b>LKPD</span>
+        <span class="fchip"><b>5</b>Analisis</span>
+        <span class="fchip"><b>6</b>Kesimpulan</span>
+      </div>
+      <div class="m-note" style="margin-top:14px"><i data-lucide="lightbulb"></i>
+        <span>Kamu adalah peneliti aktif: jawaban tidak diberikan langsung — gali sendiri melalui observasi dan bukti!</span>
+      </div>
+
+      <div class="step-actions" style="justify-content:space-between; margin-top:18px">
+        <button class="btn ghost" data-back type="button"><i data-lucide="arrow-left"></i> Kembali ke Menu</button>
+        <button class="btn primary" id="tujuanNext" type="button">Lanjut: Masuk ke Laboratorium <i data-lucide="arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-view" id="viewPanduan">
+    <div class="home-card">
+      <div class="subhead">
+        <div>
+          <p class="m-sub">Halaman Utama › Panduan Penggunaan</p>
+          <h2><span class="mh-icon"><i data-lucide="book-open"></i></span> Panduan Penggunaan</h2>
+        </div>
+        <button class="btn back" data-back type="button"><i data-lucide="arrow-left"></i> Kembali</button>
+      </div>
+
+      <p class="m-sec-title" style="margin-top:0">A. Sebelum Mulai</p>
+      <div class="g-list">
+        <div class="g-item"><span class="gi">1</span>
+          <p>Baca <b>Tujuan Pembelajaran</b> agar tahu apa yang akan dicapai.</p></div>
+        <div class="g-item"><span class="gi">2</span>
+          <p>Kenali meja praktikum: gelas beker, pemanas, termometer, sendok, pipet, botol cuka, dan jeruk nipis. <b>Klik beker, poster keselamatan, atau papan LKPD</b> di meja — semuanya bisa diklik!</p></div>
+      </div>
+
+      <p class="m-sec-title">B. Alur 8 Tahap Eksperimen — setiap tahap selesai menambah progres di menu bar laboratorium</p>
+      <div class="g-list">
+        <div class="g-item"><span class="gi">1</span>
+          <p><b>Amati &amp; Prediksi</b> — klik gelas beker, baca lembar pengamatan, lalu tulis dan kunci hipotesismu.</p></div>
+        <div class="g-item"><span class="gi">2</span>
+          <p><b>Panaskan</b> — nyalakan pemanas pada panel kanan, atur target suhu (disarankan 60–75 °C), amati termometer.</p></div>
+        <div class="g-item"><span class="gi">3</span>
+          <p><b>Tambah Asam</b> — pilih cuka atau air jeruk, atur jumlah tetesan, tekan "Tambahkan ke Susu". Bisa diulang!</p></div>
+        <div class="g-item"><span class="gi">4</span>
+          <p><b>Aduk</b> — tekan dan tahan tombol "Aduk" sambil mengamati gumpalan terbentuk.</p></div>
+        <div class="g-item"><span class="gi">5</span>
+          <p><b>Catat Hasil</b> — isi tabel Sebelum vs Sesudah, lalu tekan "Periksa Pengamatan".</p></div>
+        <div class="g-item"><span class="gi">6</span>
+          <p><b>Analisis</b> — jawab 5 pertanyaan dengan kata-katamu sendiri; gunakan 💡 Petunjuk bila bingung.</p></div>
+        <div class="g-item"><span class="gi">7</span>
+          <p><b>Klasifikasi</b> — seret kartu bukti ke kolom Perubahan Fisika atau Perubahan Kimia.</p></div>
+        <div class="g-item"><span class="gi">8</span>
+          <p><b>Kesimpulan</b> — tulis kesimpulanmu, kirim, cetak LKPD, lalu akhiri eksperimen.</p></div>
+      </div>
+
+      <p class="m-sec-title">C. Fitur Penting</p>
+      <div class="g-list">
+        <div class="g-item"><span class="gi"><i data-lucide="zoom-in"></i></span>
+          <p><b>Zoom Pengamatan</b> — lihat molekul kasein saling menempel menjadi dadih secara langsung.</p></div>
+        <div class="g-item"><span class="gi"><i data-lucide="save"></i></span>
+          <p><b>Rekam &amp; Ulangi Percobaan</b> — simpan hasil, coba variabel berbeda, dan bandingkan di <b>Jurnal Percobaan</b>.</p></div>
+        <div class="g-item"><span class="gi"><i data-lucide="notebook-pen"></i></span>
+          <p><b>LKPD Terintegrasi &amp; Sinkron Otomatis</b> — seluruh data aktivitas tersinkron real-time; jawabanmu tersimpan dan tidak pernah hilang.</p></div>
+        <div class="g-item"><span class="gi"><i data-lucide="printer"></i></span>
+          <p><b>Cetak Profesional A4</b> — LKPD tercetak rapi: tanpa teks terpotong, header tabel berulang antar halaman, dan konten mengalir otomatis.</p></div>
+        <div class="g-item"><span class="gi"><i data-lucide="volume-2"></i></span>
+          <p><b>Musik Latar &amp; Efek Klik</b> — atur volume, bisukan suara, dan aktifkan <b>Layar Penuh</b> lewat tombol bulat di pojok kanan bawah.</p></div>
+        <div class="g-item"><span class="gi"><i data-lucide="home"></i></span>
+          <p><b>Progres tersimpan otomatis</b> — terlihat di menu bar laboratorium; tombol 🏠 kembali ke Halaman Utama tanpa kehilangan data.</p></div>
+      </div>
+
+      <div class="m-note"><i data-lucide="triangle-alert"></i>
+        <span><b>Keselamatan:</b> pemanas virtual bersuhu tinggi — jangan menyentuh wadah panas secara langsung, gunakan sendok saat mengaduk.</span>
+      </div>
+
+      <div class="step-actions" style="justify-content:space-between; margin-top:18px">
+        <button class="btn ghost" data-back type="button"><i data-lucide="arrow-left"></i> Kembali ke Menu</button>
+        <button class="btn primary" id="panduanNext" type="button">Lanjut: Masuk ke Laboratorium <i data-lucide="arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-view" id="viewReg">
+    <div class="home-card" style="max-width:640px; margin:0 auto">
+      <div class="subhead">
+        <div>
+          <p class="m-sub">Masuk ke Laboratorium › Registrasi</p>
+          <h2><span class="mh-icon"><i data-lucide="clipboard-check"></i></span> Registrasi Peneliti</h2>
+        </div>
+        <button class="btn back" data-back type="button"><i data-lucide="arrow-left"></i> Kembali</button>
+      </div>
+
+      <p style="font-size:.9rem; color:var(--ink-soft); font-weight:600; margin-bottom:14px; position:relative; z-index:1">
+        Isi identitasmu di bawah ini. Data akan tercetak pada <b>LKPD</b> dan tersimpan otomatis di perangkat ini.</p>
+
+      <form class="reg-form" id="regForm" novalidate>
+        <div class="field">
+          <label for="regName">Nama Lengkap <span class="req">*</span></label>
+          <input id="regName" type="text" placeholder="Contoh: Aisyah Putri" autocomplete="name" maxlength="60">
+        </div>
+        <div class="reg-row">
+          <div class="field">
+            <label for="regCls">Kelas <span class="req">*</span></label>
+            <input id="regCls" type="text" placeholder="Contoh: VII-B" maxlength="20">
+          </div>
+          <div class="field">
+            <label for="regSchool">Sekolah <span class="req">*</span></label>
+            <input id="regSchool" type="text" placeholder="Contoh: SMP Negeri 1 Harapan" maxlength="80">
+          </div>
+        </div>
+        <div class="reg-row">
+          <div class="field">
+            <label for="regTeacher">Nama Guru <span class="req">*</span></label>
+            <input id="regTeacher" type="text" placeholder="Contoh: Ibu Ratna, S.Pd." maxlength="60">
+          </div>
+          <div class="field">
+            <label for="regGroup">Nama Kelompok <span class="opt">(opsional)</span></label>
+            <input id="regGroup" type="text" placeholder="Contoh: Kelompok 3 — Tim Dadih" maxlength="60">
+          </div>
+        </div>
+        <p class="reg-note"><i data-lucide="info"></i> Tanda <b style="color:var(--err)">*</b> wajib diisi · Nama Kelompok boleh dikosongkan.</p>
+        <button class="btn primary big" type="submit" style="width:100%">
+          <i data-lucide="flask-conical"></i> Masuk ke Beranda Laboratorium
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== 3. BERANDA LABORATORIUM ===================== -->
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon"><i data-lucide="flask-conical"></i></div>
+      <div>
+        <h1>Lab Maya <span>· Susu Menjadi Dadih</span></h1>
+        <p>IPA · Kelas VII · Perubahan Zat</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="lab-chip" id="labProgChip" title="Progres eksperimen: 0% — 0 dari 8 tahapan selesai">
+        <span class="lp-label"><i data-lucide="gauge"></i> Progres</span>
+        <div class="lp-bar"><div id="labPFill"></div></div>
+        <b id="labPct">0%</b>
+      </div>
+      <span class="id-chip hidden" id="idChip" title="Data peneliti terdaftar"><i data-lucide="user-round"></i><span id="idChipText"></span></span>
+      <button class="btn ghost" id="openJournal"><i data-lucide="clipboard-list"></i> Jurnal Percobaan</button>
+      <button class="btn ghost" id="openLKPD"><i data-lucide="notebook-pen"></i> LKPD</button>
+      <button class="btn ghost" id="openRef" title="Sumber ilmiah, glosarium, dan daftar rujukan"><i data-lucide="library"></i> Referensi</button>
+      <button class="btn ghost" id="openDev" title="Tentang aplikasi & tim pengembang"><i data-lucide="code"></i> Pengembang</button>
+      <button class="btn ghost" id="btnHome" title="Kembali ke Halaman Utama"><i data-lucide="home"></i></button>
+      <button class="btn ghost icon" id="btnReset" title="Hapus progres & mulai ulang"><i data-lucide="rotate-ccw"></i></button>
+    </div>
+  </header>
+
+  <nav class="stepper" id="stepper" aria-label="Tahapan eksperimen"></nav>
+
+  <main>
+    <section class="step-panel" id="stepPanel">
+
+      <div class="step-card active" id="step1">
+        <div class="step-head"><div class="step-num">1</div>
+          <div><p>Tahap 1 · +12,5%</p><h2>Mengamati Kondisi Awal</h2></div></div>
+        <div class="step-body">
+          <p class="desc">Sebelum bereksperimen, amati dulu susu yang ada di gelas beker. <b>Klik gelas beker</b> pada meja praktikum untuk membuka lembar pengamatan.</p>
+          <div class="obs-card hidden" id="obsCard">
+            <div class="obs-row"><b><i data-lucide="palette"></i>Warna</b><span>Putih susu yang cerah dan merata di seluruh cairan.</span></div>
+            <div class="obs-row"><b><i data-lucide="waves"></i>Tekstur</b><span>Cair, licin, dan homogen — tercampur merata, tidak ada gumpalan.</span></div>
+            <div class="obs-row"><b><i data-lucide="wind"></i>Aroma</b><span>Bau khas susu segar, belum ada aroma asam.</span></div>
+            <div class="obs-row"><b><i data-lucide="glass-water"></i>Keadaan zat</b><span>Cair — bentuknya mengikuti wadah, dapat mengalir.</span></div>
+          </div>
+          <button class="btn ghost" id="btnObserved"><i data-lucide="eye"></i> Saya sudah mengamati dengan teliti</button>
+          <div id="hypWrap" class="hidden">
+            <p class="desc" style="font-weight:700">Buat prediksi / hipotesismu:</p>
+            <p style="font-size:.9rem; background:var(--sky1); border-radius:12px; padding:10px 12px; font-weight:600; max-width:900px; color:var(--royal)">
+              “Apa yang akan terjadi jika susu hangat ditambahkan cuka atau air jeruk?”</p>
+            <textarea id="hypText" placeholder="Jika susu hangat ditambahkan cuka atau air jeruk, maka ..."></textarea>
+            <div class="charcount" id="hypCount">0 karakter</div>
+            <button class="btn amber" id="btnLockHyp"><i data-lucide="lock"></i> Kunci Prediksi & Mulai Eksperimen</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card" id="step2">
+        <div class="step-head"><div class="step-num">2</div>
+          <div><p>Tahap 2 · +12,5%</p><h2>Memanaskan Susu</h2></div></div>
+        <div class="step-body">
+          <p class="desc">Saatnya menghangatkan susu. Gunakan panel <b>Pemanas</b> di menu kontrol (sebelah kanan meja praktikum):</p>
+          <ol class="howto">
+            <li>Tekan tombol <b>Nyalakan Pemanas</b>.</li>
+            <li>Geser slider <b>target suhu</b> — disarankan 60–75 °C.</li>
+            <li>Amati termometer digital & tampilan susu saat suhunya naik.</li>
+          </ol>
+          <div class="safety-mini"><i data-lucide="triangle-alert"></i>
+            <span><b>Hati-hati!</b> Alat pemanas memiliki suhu tinggi. Jangan menyentuh wadah panas secara langsung.</span></div>
+          <div class="step-actions">
+            <button class="btn primary" id="btnTo3">Lanjut Menambah Asam <i data-lucide="arrow-right"></i></button>
+          </div>
+          <p class="dock-note hidden" id="coldNote" style="color:#6B4B00">💡 Suhu masih di bawah 40 °C. Susu hangat membuat penggumpalan lebih jelas — tetapi boleh dicoba! Kamu bisa membandingkan hasilnya di Jurnal Percobaan.</p>
+        </div>
+      </div>
+
+      <div class="step-card" id="step3">
+        <div class="step-head"><div class="step-num">3</div>
+          <div><p>Tahap 3 · +12,5%</p><h2>Menambahkan Cuka atau Air Jeruk</h2></div></div>
+        <div class="step-body">
+          <p class="desc">Pilih <b>satu</b> bahan asam pada panel <b>Bahan Asam</b> (klik botol di meja juga bisa), atur jumlah tetesan, lalu tekan <b>Tambahkan ke Susu</b>.</p>
+          <p class="dock-note">🔎 Amati setiap beberapa tetes: apakah ada yang berubah? Kamu bisa menambahkan lagi berkali-kali.</p>
+          <div class="hintbox">💡 Ingin melihat lebih dalam? Buka <b>Zoom Pengamatan</b> di panel Pengamatan untuk melihat molekul-molekul susunya!</div>
+          <div class="step-actions">
+            <button class="btn primary" id="btnTo4">Lanjut ke Pengadukan <i data-lucide="arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card" id="step4">
+        <div class="step-head"><div class="step-num">4</div>
+          <div><p>Tahap 4 · +12,5%</p><h2>Mengaduk Campuran</h2></div></div>
+        <div class="step-body">
+          <p class="desc"><b>Tekan dan tahan</b> tombol <b>Aduk</b> di panel Pengadukan (kanan), lalu amati:</p>
+          <ol class="howto">
+            <li>Terbentuknya <b>gumpalan putih</b> (dadih).</li>
+            <li>Pemisahan <b>cairan bening kekuningan</b> (whey).</li>
+            <li>Perubahan <b>tekstur</b> susu.</li>
+            <li>Perubahan <b>aroma</b> menjadi asam segar.</li>
+          </ol>
+          <div class="step-actions">
+            <button class="btn blue" id="btnZoom2"><i data-lucide="zoom-in"></i> Zoom Pengamatan</button>
+            <button class="btn amber" id="btnTo5">Selesai Mengaduk → Catat Hasil <i data-lucide="arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card" id="step5">
+        <div class="step-head"><div class="step-num">5</div>
+          <div><p>Tahap 5 · +12,5%</p><h2>Hasil Pengamatan</h2></div></div>
+        <div class="step-body">
+          <p class="desc">Isi tabel berikut berdasarkan <b>pengamatanmu sendiri</b> — klik pilihan yang paling sesuai. Jawaban tidak diberikan; kamu adalah penelitinya!</p>
+          <div id="tableWrap"></div>
+          <div class="step-actions">
+            <button class="btn blue" id="btnCheckTable"><i data-lucide="check-check"></i> Periksa Pengamatan</button>
+            <button class="btn amber" id="btnTo6" disabled>Lanjut Menganalisis <i data-lucide="arrow-right"></i></button>
+          </div>
+          <div id="tableMsg"></div>
+        </div>
+      </div>
+
+      <div class="step-card" id="step6">
+        <div class="step-head"><div class="step-num">6</div>
+          <div><p>Tahap 6 · +12,5%</p><h2>Mari Analisis!</h2></div></div>
+        <div class="step-body">
+          <p class="desc">Jawab dengan kata-katamu sendiri. Jika bingung, gunakan tombol <b>💡 Petunjuk</b> — petunjuk akan muncul bertahap, bukan jawaban jadi.</p>
+          <div id="anWrap"></div>
+          <div class="step-actions">
+            <button class="btn amber" id="btnTo7" disabled>Lanjut ke Klasifikasi <i data-lucide="arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card" id="step7">
+        <div class="step-head"><div class="step-num">7</div>
+          <div><p>Tahap 7 · +12,5%</p><h2>Klasifikasi Bukti</h2></div></div>
+        <div class="step-body">
+          <p class="desc">Seret (atau geser dengan jari) setiap kartu bukti ke kategori yang menurutmu tepat. Kartu yang salah akan kembali — perhatikan petunjuknya!</p>
+          <div class="rack" id="cardRack"></div>
+          <div class="dnd-area">
+            <div class="zone phys" id="zonePhys"><h3><span class="dot"></span>Perubahan Fisika</h3><p class="placeholder">Seret bukti ke sini</p></div>
+            <div class="zone chem" id="zoneChem"><h3><span class="dot"></span>Perubahan Kimia</h3><p class="placeholder">Seret bukti ke sini</p></div>
+          </div>
+          <div id="classifyMsg"></div>
+          <div id="reflectWrap" class="hidden">
+            <p class="desc" style="font-weight:700">Semua kartu tepat! 🎉 Sekarang jelaskan bukti ilmiah yang mendukung klasifikasimu:</p>
+            <textarea id="reflectText" placeholder="Contoh: Saya mengelompokkan ... karena ..."></textarea>
+            <div class="step-actions">
+              <button class="btn amber" id="btnTo8">Lanjut ke Kesimpulan <i data-lucide="arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card" id="step8">
+        <div class="step-head"><div class="step-num">8</div>
+          <div><p>Tahap 8 · +12,5% → 100%</p><h2>Kesimpulan</h2></div></div>
+        <div class="step-body">
+          <p class="desc">Rangkum alur berpikirmu: <b>Hipotesis → Eksperimen → Pengamatan → Analisis → Kesimpulan</b>.</p>
+          <div id="flowSummary"></div>
+          <p class="desc" style="font-weight:700">Sekarang tuliskan kesimpulanmu sendiri:</p>
+          <textarea id="conclText" placeholder="Berdasarkan percobaan yang telah aku lakukan, ..."></textarea>
+          <div class="step-actions">
+            <button class="btn amber" id="btnFinish"><i data-lucide="party-popper"></i> Kirim Kesimpulan</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="sim-layout">
+
+      <div class="sim-stage">
+        <div class="safety-strip hidden" id="safetyStrip">
+          <i data-lucide="triangle-alert"></i>
+          <span><b>Hati-hati!</b> Alat pemanas memiliki suhu tinggi. Jangan menyentuh wadah panas secara langsung.</span>
+        </div>
+
+        <div class="scene-card">
+          <svg id="scene" viewBox="0 0 960 520" role="img" aria-label="Meja praktikum virtual">
+            <defs>
+              <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+                <circle cx="13" cy="13" r="1.2" fill="#C9DEF7"/>
+              </pattern>
+              <clipPath id="beakerClip">
+                <path d="M408,204 L408,336 Q408,350 424,350 L516,350 Q532,350 532,336 L532,204 Z"/>
+              </clipPath>
+            </defs>
+
+            <rect x="0" y="0" width="960" height="392" fill="#EAF2FE"/>
+            <rect x="0" y="0" width="960" height="392" fill="url(#dots)"/>
+            <rect x="0" y="388" width="960" height="22" fill="#2E6FE0"/>
+            <rect x="0" y="410" width="960" height="110" fill="#1E3A8A"/>
+            <rect x="0" y="410" width="960" height="7" fill="#15297A"/>
+            <rect x="90" y="446" width="330" height="52" rx="8" fill="#183077"/>
+            <rect x="540" y="446" width="330" height="52" rx="8" fill="#183077"/>
+            <rect x="235" y="466" width="40" height="10" rx="5" fill="#0F1F52"/>
+            <rect x="685" y="466" width="40" height="10" rx="5" fill="#0F1F52"/>
+
+            <g id="posterSafety" class="clickable">
+              <g transform="translate(64,84) rotate(-3)">
+                <rect width="128" height="150" rx="8" fill="#fff" stroke="#FFCF33" stroke-width="3"/>
+                <rect x="10" y="10" width="108" height="130" rx="5" fill="#FFF8E2"/>
+                <path d="M64,26 L92,74 L36,74 Z" fill="#FFCF33" stroke="#B57F00" stroke-width="3" stroke-linejoin="round"/>
+                <rect x="61" y="40" width="6" height="18" rx="3" fill="#5C3A00"/>
+                <circle cx="64" cy="65" r="3.6" fill="#5C3A00"/>
+                <text x="64" y="94" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="13" fill="#6B4B00">KESELAMATAN</text>
+                <rect x="20" y="104" width="88" height="5" rx="2.5" fill="#EBD9A6"/>
+                <rect x="20" y="115" width="70" height="5" rx="2.5" fill="#EBD9A6"/>
+              </g>
+            </g>
+
+            <g id="clipLKPD" class="clickable">
+              <g transform="translate(196,236) rotate(5)">
+                <rect width="112" height="146" rx="8" fill="#fff" stroke="#A9C6EE" stroke-width="3"/>
+                <rect x="36" y="-9" width="40" height="18" rx="6" fill="#7E9BD0"/>
+                <rect x="14" y="22" width="84" height="6" rx="3" fill="#DCE8FA"/>
+                <rect x="14" y="38" width="66" height="6" rx="3" fill="#DCE8FA"/>
+                <rect x="14" y="54" width="76" height="6" rx="3" fill="#DCE8FA"/>
+                <rect x="14" y="70" width="58" height="6" rx="3" fill="#DCE8FA"/>
+                <rect x="14" y="92" width="84" height="34" rx="6" fill="#EAF3FE" stroke="#A9C6EE"/>
+                <text x="56" y="113" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="13" fill="#1E3A8A">LKPD</text>
+              </g>
+            </g>
+
+            <g>
+              <path d="M352,388 C340,392 330,392 322,398" stroke="#27364F" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <rect x="348" y="338" width="238" height="52" rx="10" fill="#2B3A57"/>
+              <rect x="360" y="328" width="214" height="14" rx="6" fill="#A9BEE0"/>
+              <circle id="heaterLamp" cx="404" cy="364" r="8" fill="#5E6E7C" stroke="#1D2A3D" stroke-width="2"/>
+              <circle cx="446" cy="364" r="12" fill="#5E6E7C" stroke="#1D2A3D" stroke-width="2"/>
+              <rect x="443" y="361" width="6" height="6" rx="1.5" fill="#1D2A3D"/>
+              <text x="500" y="369" font-family="Plus Jakarta Sans" font-weight="800" font-size="11" fill="#A9BEE0" letter-spacing="2">HEATER</text>
+            </g>
+
+            <g id="steam" style="opacity:0" transform="translate(470,192)">
+              <path class="steam-p" d="M-22,0 C-30,-14 -14,-22 -22,-36" stroke="#CFE0F7" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path class="steam-p" d="M0,-4 C-8,-18 8,-26 0,-42" stroke="#CFE0F7" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path class="steam-p" d="M22,0 C14,-14 30,-22 22,-36" stroke="#CFE0F7" stroke-width="5" fill="none" stroke-linecap="round"/>
+            </g>
+
+            <g clip-path="url(#beakerClip)">
+              <rect id="liquid" x="408" y="240" width="124" height="112" fill="#FBF6E7"/>
+              <rect id="whey" x="408" y="240" width="124" height="0" fill="#EFDFAC" opacity="0"/>
+              <g id="bubbles" style="display:none">
+                <circle class="bub" cx="440" cy="336" r="3.4" fill="#fff" opacity=".85"/>
+                <circle class="bub" cx="470" cy="340" r="2.6" fill="#fff" opacity=".85"/>
+                <circle class="bub" cx="498" cy="334" r="3" fill="#fff" opacity=".85"/>
+                <circle class="bub" cx="458" cy="342" r="2.2" fill="#fff" opacity=".85"/>
+              </g>
+              <g id="curds"></g>
+            </g>
+
+            <g id="beakerHit" class="clickable">
+              <path d="M404,204 L404,336 Q404,352 420,352 L520,352 Q536,352 536,336 L536,204"
+                    fill="rgba(255,255,255,.32)" stroke="#8FB6E6" stroke-width="4" stroke-linecap="round"/>
+              <path d="M404,204 L392,194 M404,204 L412,197" stroke="#8FB6E6" stroke-width="4" stroke-linecap="round"/>
+              <rect x="414" y="216" width="7" height="118" rx="3.5" fill="#fff" opacity=".55"/>
+              <circle id="beakerPulse" cx="470" cy="278" r="112" fill="none" stroke="#FFCF33" stroke-width="4" stroke-dasharray="10 12"/>
+            </g>
+
+            <g id="spoon">
+              <rect x="496" y="158" width="8" height="140" rx="4" fill="#C9D6E2" stroke="#8FA8BC" stroke-width="2"/>
+              <ellipse cx="500" cy="308" rx="12" ry="18" fill="#C9D6E2" stroke="#8FA8BC" stroke-width="2"/>
+            </g>
+
+            <g id="dropLayer"></g>
+
+            <g id="pipet" transform="translate(640,96)">
+              <circle cx="0" cy="14" r="13" fill="#DCE8FA" stroke="#8FB6E6" stroke-width="3"/>
+              <rect x="-6" y="26" width="12" height="34" rx="4" fill="#EAF3FE" stroke="#8FB6E6" stroke-width="2.5"/>
+              <rect id="pipetLiquid" x="-3.5" y="32" width="7" height="18" rx="2" fill="#DCE8FA"/>
+              <path d="M-6,60 L0,76 L6,60 Z" fill="#EAF3FE" stroke="#8FB6E6" stroke-width="2.5" stroke-linejoin="round"/>
+            </g>
+
+            <g>
+              <path d="M536,300 C566,306 586,304 606,296" stroke="#15297A" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+              <circle cx="536" cy="300" r="4.5" fill="#15297A"/>
+              <rect x="606" y="264" width="92" height="60" rx="10" fill="#0F1F52"/>
+              <rect x="616" y="274" width="72" height="30" rx="5" fill="#DFF2E4"/>
+              <text id="lcdScene" x="652" y="296" text-anchor="middle" font-family="ui-monospace,Consolas,monospace" font-weight="700" font-size="17" fill="#17453B">27,0</text>
+              <text x="652" y="318" text-anchor="middle" font-family="Plus Jakarta Sans" font-weight="800" font-size="9" fill="#8FA6D8" letter-spacing="1.5">°C · DIGITAL</text>
+            </g>
+
+            <g id="bottleVinegar" class="clickable">
+              <rect x="706" y="292" width="20" height="10" rx="3" fill="#7FA88F"/>
+              <path d="M700,302 L732,302 L740,316 L740,392 L692,392 L692,316 Z" fill="#F3F7F2" stroke="#9DB7A8" stroke-width="3"/>
+              <rect x="698" y="332" width="36" height="42" rx="5" fill="#fff" stroke="#D6E4DB"/>
+              <text x="716" y="351" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="11" fill="#5B7A66">CUKA</text>
+              <text x="716" y="364" text-anchor="middle" font-family="Plus Jakarta Sans" font-weight="600" font-size="7" fill="#8FA89A">ASAM</text>
+            </g>
+
+            <g id="lemonBtn" class="clickable">
+              <circle cx="800" cy="356" r="30" fill="#A8CF45" stroke="#7FA832" stroke-width="3"/>
+              <path d="M800,326 A30,30 0 0 1 800,386 Z M796,356 L772,356 M800,356 L824,356 M800,356 L783,339 M800,356 L817,339 M800,356 L783,373 M800,356 L817,373"
+                    stroke="#7FA832" stroke-width="2.5" fill="#D7EBA0"/>
+              <path d="M806,326 C816,314 832,314 838,322 C830,332 814,332 806,326 Z" fill="#6E9A2E"/>
+              <text x="800" y="412" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="11" fill="#5B7A66">AIR JERUK</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <aside class="dock">
+        <div class="dock-group locked" id="dockHeater">
+          <div class="dock-head"><i data-lucide="flame"></i><span>Pemanas</span>
+            <span class="dock-lock"><i data-lucide="lock"></i>Tahap 2</span></div>
+          <button class="btn amber" id="btnHeater"><i data-lucide="power"></i> Nyalakan Pemanas</button>
+          <label class="slider-row">Target suhu: <output id="targetVal">65 °C</output>
+            <input type="range" id="tempTarget" min="30" max="90" value="65" step="1">
+          </label>
+          <div class="readout"><span class="lcd" id="tempNow">27,0°</span><span class="readout-sub">suhu susu<br>saat ini</span></div>
+        </div>
+
+        <div class="dock-group locked" id="dockAcid">
+          <div class="dock-head"><i data-lucide="droplets"></i><span>Bahan Asam</span>
+            <span class="dock-lock"><i data-lucide="lock"></i>Tahap 3</span></div>
+          <div class="acid-choice">
+            <button class="acid-btn" data-acid="cuka"><i data-lucide="flask-round"></i> Cuka</button>
+            <button class="acid-btn" data-acid="jeruk"><i data-lucide="citrus"></i> Air Jeruk</button>
+          </div>
+          <label class="slider-row">Jumlah tetesan: <output id="dropVal">5 tetes</output>
+            <input type="range" id="dropCount" min="1" max="20" value="5" step="1">
+          </label>
+          <button class="btn amber" id="btnPour"><i data-lucide="pipette"></i> Tambahkan ke Susu</button>
+          <p class="dock-note">Total tetes dalam beker: <b id="dropsTotal">0</b></p>
+        </div>
+
+        <div class="dock-group locked" id="dockStir">
+          <div class="dock-head"><i data-lucide="rotate-cw"></i><span>Pengadukan</span>
+            <span class="dock-lock"><i data-lucide="lock"></i>Tahap 4</span></div>
+          <button class="btn amber hold" id="btnStir"><i data-lucide="hand"></i> Tahan untuk Mengaduk</button>
+          <div class="bar"><div id="stirBar"></div></div>
+          <p class="dock-note" id="stirNote">Tekan & tahan tombol — sendok akan bergerak mengaduk campuran.</p>
+        </div>
+
+        <div class="dock-group" id="dockTools">
+          <div class="dock-head"><i data-lucide="microscope"></i><span>Pengamatan</span></div>
+          <button class="btn blue" id="btnZoom"><i data-lucide="zoom-in"></i> Zoom Pengamatan</button>
+          <button class="btn ghost" id="btnRecord" disabled style="background:rgba(255,255,255,.92)"><i data-lucide="save"></i> Rekam & Ulangi Percobaan</button>
+          <p class="dock-note">Rekam hasil, lalu coba variabel berbeda (suhu / jenis / jumlah tetes).</p>
+        </div>
+      </aside>
+
+    </section>
+  </main>
+
+  <footer class="foot">Lab Maya IPA · Eksperimen Susu Menjadi Dadih · Pembelajaran Inkuiri — Prediksi → Eksperimen → Observasi → LKPD → Analisis → Kesimpulan</footer>
+</div>
+
+<!-- ===================== DRAWER ===================== -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h2 id="drawerTitle">LKPD Digital</h2>
+    <button class="btn primary" id="btnPrint" style="display:none"><i data-lucide="printer"></i> Cetak / PDF</button>
+    <button class="btn ghost icon" id="drawerClose"><i data-lucide="x"></i></button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<!-- ===================== MODAL ZOOM ===================== -->
+<div class="modal-backdrop dismissible" id="zoomModal">
+  <div class="modal zoom-modal">
+    <button class="close-x" id="btnZoomClose" aria-label="Tutup"><i data-lucide="x"></i></button>
+    <h2>Lensa Pengamatan</h2>
+    <div class="lens-wrap"><canvas id="zoomCanvas"></canvas></div>
+    <div class="zoom-meta"><span>Penggumpalan:</span><b id="zoomPct">0%</b></div>
+    <div class="zoom-phase" id="zoomPhase"></div>
+  </div>
+</div>
+
+<!-- ===================== MODAL KESELAMATAN ===================== -->
+<div class="modal-backdrop dismissible" id="safetyModal">
+  <div class="modal">
+    <button class="close-x" id="btnSafetyClose" aria-label="Tutup"><i data-lucide="x"></i></button>
+    <h2>⚠️ Poster Keselamatan Lab</h2>
+    <ol class="howto" style="margin-top:8px; max-width:none">
+      <li>Jangan menyentuh wadah atau pemanas yang sedang panas secara langsung.</li>
+      <li>Gunakan sendok atau alat bantu saat mengaduk campuran panas.</li>
+      <li>Ikuti arahan guru dan baca langkah kerja sebelum bereksperimen.</li>
+      <li>Cuci tangan setelah selesai melakukan praktikum.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ===================== MODAL REFERENSI ===================== -->
+<div class="modal-backdrop dismissible" id="refModal">
+  <div class="modal">
+    <button class="close-x" id="btnRefClose" aria-label="Tutup"><i data-lucide="x"></i></button>
+    <h2>📚 Referensi</h2>
+    <p class="m-sub">Sumber ilmiah &amp; rujukan materi eksperimen</p>
+
+    <p class="m-sec-title" style="margin-top:0">Glosarium Mini</p>
+    <div class="g-list">
+      <div class="g-item"><span class="gi">K</span>
+        <p><b>Kasein</b> — protein utama penyusun susu (sekitar 80% dari seluruh protein susu).</p></div>
+      <div class="g-item"><span class="gi">W</span>
+        <p><b>Whey</b> — cairan bening kekuningan (air whey) yang terpisah dari gumpalan dadih.</p></div>
+      <div class="g-item"><span class="gi">K</span>
+        <p><b>Koagulasi</b> — proses partikel yang terdispersi saling menempel dan membentuk gumpalan.</p></div>
+      <div class="g-item"><span class="gi">P</span>
+        <p><b>Perubahan kimia</b> — perubahan zat yang menghasilkan zat atau sifat baru dan umumnya tidak dapat kembali seperti semula.</p></div>
+      <div class="g-item"><span class="gi">P</span>
+        <p><b>Perubahan fisika</b> — perubahan yang hanya mengubah bentuk atau wujud zat, tanpa membentuk zat baru.</p></div>
+    </div>
+
+    <p class="m-sec-title">Dasar Ilmiah Singkat — <i>untuk guru / konfirmasi setelah kesimpulan</i></p>
+    <div class="goal-quote">
+      Susu mengandung <b>protein kasein</b> yang terdispersi sebagai partikel koloid bermuatan listrik sehingga
+      saling menjauh dan susu tampak homogen. Penambahan <b>asam</b> (asam asetat pada cuka / asam sitrat pada air jeruk)
+      menetralkan muatan partikel kasein, sehingga partikel saling menempel dan menggumpal (<b>koagulasi</b>) menjadi
+      <b>dadih</b>, sementara air memisah sebagai <b>whey</b>. Karena terbentuk zat baru dengan sifat berbeda dan tidak
+      dapat kembali seperti semula, peristiwa ini tergolong <b>perubahan kimia</b>. <b>Pemanasan</b> mempercepat koagulasi
+      karena perubahan struktur kasein lebih mudah terjadi pada suhu tinggi.
+    </div>
+    <div class="m-note" style="margin-bottom:6px"><i data-lucide="lightbulb"></i>
+      <span>Penjelasan ini sebaiknya ditampilkan <b>setelah</b> peserta didik menyusun kesimpulan sendiri, sebagai pengayaan dan konfirmasi.</span>
+    </div>
+
+    <p class="m-sec-title">Daftar Rujukan</p>
+    <ol class="ref-list">
+      <li>Ulfa, M., Jayanti, A., &amp; Wulandari, W. (2021). <b>Ilmu Pengetahuan Alam untuk SMP/MTs Kelas VII</b>. Jakarta: Pusat Kurikulum dan Perbukuan, Kemendikbudristek.</li>
+      <li>Lucey, J. A., &amp; Horne, D. S. (2009). Acid coagulation of milk. Dalam P. F. Fox &amp; P. L. H. McSweeney (Eds.), <b>Advanced Dairy Chemistry—1: Proteins</b>. New York: Springer.</li>
+      <li>Walstra, P., Wouters, J. T. M., &amp; Geurts, T. J. (2006). <b>Dairy Science and Technology</b> (2nd ed.). Boca Raton: CRC Press.</li>
+      <li>Keputusan Kepala BSKAP Kemendikbudristek No. 008/H/KR/2022 tentang <b>Capaian Pembelajaran (CP) pada Kurikulum Merdeka</b> — IPA Fase D.</li>
+      <li>PhET Interactive Simulations, University of Colorado Boulder. <b>Simulasi laboratorium virtual</b>. https://phet.colorado.edu</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ===================== MODAL PENGEMBANG ===================== -->
+<div class="modal-backdrop dismissible" id="devModal">
+  <div class="modal">
+    <button class="close-x" id="btnDevClose" aria-label="Tutup"><i data-lucide="x"></i></button>
+    <h2>💻 Pengembang</h2>
+    <p class="m-sub">Tentang aplikasi Lab Maya ini</p>
+
+    <div class="dev-card">
+      <div class="dev-logo"><i data-lucide="flask-conical"></i></div>
+      <div>
+        <b>Lab Maya — Eksperimen “Susu Menjadi Dadih”</b>
+        <span>Media pembelajaran IPA interaktif · Kelas VII · Versi 1.1</span>
+      </div>
+    </div>
+
+    <p class="m-sec-title">Deskripsi</p>
+    <p style="font-size:.88rem">
+      Aplikasi laboratorium virtual dalam satu file HTML tanpa server — siswa berperan sebagai
+      <b>peneliti aktif</b>: membuat prediksi, melakukan eksperimen (pemanasan &amp; penambahan bahan asam),
+      mengamati bukti, mengisi LKPD, menganalisis data, mengklasifikasikan perubahan zat, hingga
+      menyusun kesimpulan sendiri. Jawaban tidak diberikan langsung; sistem hanya memberi
+      <b>petunjuk bertahap (scaffolding)</b>.
+    </p>
+
+    <p class="m-sec-title">Prinsip Pembelajaran</p>
+    <div class="g-list">
+      <div class="g-item"><span class="gi"><i data-lucide="lightbulb"></i></span>
+        <p><b>Berkesadaran</b> — tujuan setiap tahap ditampilkan jelas melalui stepper &amp; tujuan pembelajaran.</p></div>
+      <div class="g-item"><span class="gi"><i data-lucide="sparkles"></i></span>
+        <p><b>Bermakna</b> — konteks kehidupan sehari-hari: pembuatan dadih / tahu dari susu.</p></div>
+      <div class="g-item"><span class="gi"><i data-lucide="party-popper"></i></span>
+        <p><b>Menggembirakan</b> — animasi realistis, musik latar, progres gamifikasi, dan perayaan tiap tahapan.</p></div>
+      <div class="g-item"><span class="gi"><i data-lucide="microscope"></i></span>
+        <p><b>Inkuiri</b> — Prediksi → Eksperimen → Observasi → Analisis → Kesimpulan.</p></div>
+      <div class="g-item"><span class="gi"><i data-lucide="list-checks"></i></span>
+        <p><b>Observasi &amp; bukti</b> — kesimpulan wajib didasarkan pada data hasil pengamatan.</p></div>
+    </div>
+
+    <p class="m-sec-title">Teknologi</p>
+    <div class="dev-tech">
+      <span>HTML5</span><span>CSS3</span><span>JavaScript (Vanilla)</span><span>SVG</span>
+      <span>Canvas 2D</span><span>Web Audio</span><span>Web Storage</span><span>Lucide Icons</span>
+    </div>
+
+    <p class="m-sec-title">Tim Pengembang</p>
+    <div class="dev-people">
+      <!-- ✏️ GANTI dengan identitas pengembang Anda -->
+      <div class="dev-person"><i data-lucide="user-round"></i>
+        <div><b>Nama Pengembang</b><span>Guru IPA / Pengembang Media Pembelajaran</span></div></div>
+      <div class="dev-person"><i data-lucide="school"></i>
+        <div><b>Nama Sekolah / Instansi</b><span>SMP — Kabupaten/Kota, Provinsi</span></div></div>
+      <div class="dev-person"><i data-lucide="mail"></i>
+        <div><b>Kontak</b><span>email@contoh.sch.id</span></div></div>
+    </div>
+
+    <div class="m-note" style="margin-top:14px"><i data-lucide="heart"></i>
+      <span>Dikembangkan untuk pembelajaran IPA yang aktif, kolaboratif, dan menggembirakan. 🧪</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL KONFIRMASI AKHIRI ===================== -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal">
+    <h2>Akhiri Eksperimen?</h2>
+    <p style="font-size:.9rem">Seluruh data registrasi, isian LKPD, jurnal percobaan, progres tahapan, dan <b>persentase progres</b> akan <b>dihapus (kembali ke 0%)</b>, lalu kamu akan kembali ke <b>Halaman Utama</b>. Tindakan ini tidak bisa dibatalkan.</p>
+    <div class="step-actions" style="margin-top:14px">
+      <button class="btn ghost" id="btnConfirmNo">Batal</button>
+      <button class="btn primary" id="btnConfirmYes"><i data-lucide="home"></i> Ya, Akhiri &amp; ke Halaman Utama</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL FINALE ===================== -->
+<div class="modal-backdrop" id="finalModal">
+  <div class="modal">
+    <div class="final-bubbles">
+      <span style="left:8%;animation-delay:0s"></span><span style="left:26%;animation-delay:1.4s;width:10px;height:10px"></span>
+      <span style="left:47%;animation-delay:.7s;width:18px;height:18px"></span><span style="left:66%;animation-delay:2s"></span>
+      <span style="left:85%;animation-delay:1s;width:11px;height:11px"></span><span style="left:12%;animation-delay:2.6s;width:9px;height:9px"></span>
+    </div>
+    <div class="final-badge"><i data-lucide="microscope"></i></div>
+    <h2 style="text-align:center; color:var(--royal)">Progres 100% — Kamu Berhasil Menyimpulkan Sendiri!</h2>
+    <div class="final-quote">🧪 “Ilmuwan tidak hanya melihat perubahan, tetapi mencari bukti untuk menjelaskan mengapa perubahan tersebut terjadi!”</div>
+    <p id="finalSummary" style="font-size:.9rem"></p>
+    <div class="step-actions" style="justify-content:center; margin-top:14px">
+      <button class="btn blue" id="btnFinalLKPD"><i data-lucide="notebook-pen"></i> Lihat / Cetak LKPD</button>
+      <button class="btn amber" id="btnEndExp"><i data-lucide="flag"></i> Akhiri Eksperimen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== LEMBAR CETAK LKPD ===================== -->
+<div id="printArea" class="print-area" aria-hidden="true"></div>
+
+<!-- ===================== KONTROL SUARA & LAYAR PENUH ===================== -->
+<div class="snd-cluster" id="sndCluster">
+  <div class="snd-pop hidden" id="sndPop">
+    <div class="snd-row">
+      <span class="snd-label"><span><i data-lucide="music"></i> Musik Latar</span><output id="volBgmVal">55%</output></span>
+      <input type="range" id="volBgm" min="0" max="100" value="55" step="1">
+    </div>
+    <div class="snd-row">
+      <span class="snd-label"><span><i data-lucide="mouse-pointer-click"></i> Efek Klik</span><output id="volSfxVal">70%</output></span>
+      <input type="range" id="volSfx" min="0" max="100" value="70" step="1">
+    </div>
+    <button class="btn ghost" id="btnMute"><i data-lucide="volume-x"></i> Bisukan Semua</button>
+  </div>
+  <div class="snd-btns">
+    <button class="snd-btn" id="btnVolume" title="Pengatur Suara" aria-label="Pengatur Suara"><i data-lucide="volume-2"></i></button>
+    <button class="snd-btn" id="btnFullscreen" title="Layar Penuh" aria-label="Layar Penuh"><i data-lucide="maximize-2"></i></button>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+/* =========================================================
+   LAB MAYA — Eksperimen Susu Menjadi Dadih (IPA Kelas VII)
+   FILE FINAL v1.3: + header 4 logo (logo-1..logo-4.jpg) di
+   atas kotak menu pada Halaman Utama, tinggi 46px (menyesuai-
+   kan ukuran ikon Lab Maya). Lainnya tidak diubah.
+   ========================================================= */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const fmt1  = n => n.toFixed(1).replace('.', ',');
+function escapeHTML(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+const STEPS = ['Amati & Prediksi','Pemanaskan','Tambah Asam','Pengadukan','Catat Hasil','Analisis','Klasifikasi','Kesimpulan'];
+
+const ROWS = [
+ {id:'kondisi', label:'Kondisi zat',
+  before:['Cair, mengikuti bentuk wadah','Padat, bentuknya tetap','Berubah menjadi gas'], bOk:0,
+  after:['Tetap cair homogen seperti awal','Menggumpal & terpisah: dadih + cairan','Menjadi padat menyeluruh seperti batu'], aOk:1,
+  hint:'Amati beker: apakah susu masih cair merata, atau sudah terpisah menjadi gumpalan dan cairan?'},
+ {id:'warna', label:'Warna',
+  before:['Putih susu','Transparan bening','Kuning cerah'], bOk:0,
+  after:['Putih susu merata','Gumpalan putih + cairan bening kekuningan','Menjadi coklat'], aOk:1,
+  hint:'Perhatikan warna gumpalannya DAN warna cairan di sela-sela gumpalan.'},
+ {id:'tekstur', label:'Tekstur',
+  before:['Halus, licin, homogen','Kasar berpori','Berminyak'], bOk:0,
+  after:['Tetap halus & homogen','Kasar, berbutir, padat lunak','Seperti jelly yang kaku'], aOk:1,
+  hint:'Saat diaduk, apakah masih licin merata, atau terasa berbutir / kasar?'},
+ {id:'gumpalan', label:'Terbentuk gumpalan',
+  before:['Tidak ada','Sedikit sekali','Banyak'], bOk:0,
+  after:['Tidak ada','Hanya menempel di dasar wadah','Ya, gumpalan putih tersebar di seluruh cairan'], aOk:2,
+  hint:'Amati isi beker setelah ditambah asam hangat — apakah muncul butiran / gumpalan putih?'},
+ {id:'pemisahan', label:'Pemisahan cairan',
+  before:['Tidak ada, susu merata','Terpisah dua lapis','Ada endapan pasir'], bOk:0,
+  after:['Tetap merata','Ya, cairan bening / kekuningan terpisah dari gumpalan','Semua airnya menguap'], aOk:1,
+  hint:'Lihat cairan di antara gumpalan: masih susu pekat, atau bening kekuningan?'},
+ {id:'aroma', label:'Aroma',
+  before:['Khas susu segar','Asam menyengat','Tidak berbau'], bOk:0,
+  after:['Tetap khas susu segar','Asam segar pada cairan','Tengik / busuk'], aOk:1,
+  hint:'Aroma susunya berubah karena zat asam. Perubahan aroma adalah salah satu tanda munculnya sifat baru.'},
+];
+
+const QS = [
+ {q:'Apa perubahan yang terjadi pada susu setelah ditambahkan cuka atau air jeruk?',
+  h1:'Uraikan perubahan dari segi warna, tekstur, gumpalan, dan pemisahan cairan.',
+  h2:'Mulailah dari: “Susu yang semula cair homogen berubah menjadi ...” lalu sebutkan apa yang kamu lihat.'},
+ {q:'Apakah terbentuk zat atau sifat baru?',
+  h1:'Bandingkan sifat susu sebelum dan sesudah perlakuan: wujud, tekstur, dan aroma.',
+  h2:'Jika gumpalan itu tidak bisa diubah kembali menjadi susu seperti semula, apa artinya bagi sifat zatnya?'},
+ {q:'Apa bukti yang menunjukkan bahwa terjadi perubahan pada susu?',
+  h1:'Gunakan tabel Hasil Pengamatanmu sebagai daftar bukti.',
+  h2:'Tuliskan bukti yang KAMU amati sendiri, misalnya munculnya gumpalan, terpisahnya cairan, atau berubahnya aroma.'},
+ {q:'Mengapa terbentuk gumpalan dan cairan yang terpisah?',
+  h1:'Ingat: susu mengandung protein (kasein) yang tersebar sebagai partikel kecil. Apa yang dilakukan asam pada partikel itu?',
+  h2:'Bayangkan partikel kecil yang semula saling menjauh. Ketika asam ditambahkan, menurutmu apa yang terjadi pada partikel-partikel itu?'},
+ {q:'Menurutmu, apakah peristiwa ini termasuk perubahan fisika atau perubahan kimia? Jelaskan alasanmu berdasarkan hasil pengamatan.',
+  h1:'Ingat ciri perubahan kimia: menghasilkan zat atau sifat baru, dan sulit dikembalikan seperti semula.',
+  h2:'Kaitkan dengan buktimu: apakah dadih ini hanya “berpindah bentuk”, atau merupakan zat baru hasil reaksi dengan asam?'},
+];
+
+const CARDS = [
+ {id:'c1', t:'Terbentuk gumpalan putih (dadih)', cat:'chem'},
+ {id:'c2', t:'Aroma susu berubah menjadi asam', cat:'chem'},
+ {id:'c3', t:'Cairan bening kekuningan (whey) terpisah', cat:'chem'},
+ {id:'c4', t:'Susu tidak dapat kembali seperti semula', cat:'chem'},
+ {id:'c5', t:'Suhu susu naik saat dipanaskan', cat:'phys'},
+ {id:'c6', t:'Bentuk susu mengikuti bentuk gelas', cat:'phys'},
+ {id:'c7', t:'Es batu mencair menjadi air', cat:'phys'},
+ {id:'c8', t:'Kertas dibakar menjadi abu', cat:'chem'},
+ {id:'c9', t:'Air dimasukkan ke freezer menjadi es', cat:'phys'},
+ {id:'c10',t:'Kayu dipotong menjadi dua bagian', cat:'phys'},
+];
+
+const S = {
+  step:1, reached:{1:true},
+  observed:false, hyp:'', hypLocked:false,
+  heaterEverOn:false,
+  acid:null, drops:0, tempAtPour:null,
+  coag:0, stir:0, stirring:false,
+  dropsEver:false, adukEver:false,
+  trials:[], reflect:'', reflect2:'',
+  tableSel:{}, rowDone:{},
+  analysis:{}, hintLv:{},
+  classDone:[],
+  concl:'', finished:false,
+  name:'', cls:'', school:'', teacher:'', group:'',
+};
+let temp = 27, tempTarget = 65, heaterOn = false, pouring = false;
+let zoomOpen = false;
+let regIsEdit = false;
+const announced = {};
+let lastSeenCount = -1;
+
+let drawerMode = null;
+let lkpdSignature = '';
+
+const KEY = 'lab-dadih-v1';
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify({
+    step:S.step, reached:S.reached,
+    observed:S.observed, hyp:S.hyp, hypLocked:S.hypLocked, heaterEverOn:S.heaterEverOn,
+    acid:S.acid, drops:S.drops, trials:S.trials, reflect:S.reflect, reflect2:S.reflect2,
+    coag:S.coag, stir:S.stir, dropsEver:S.dropsEver, adukEver:S.adukEver,
+    tableSel:S.tableSel, rowDone:S.rowDone,
+    analysis:S.analysis, hintLv:S.hintLv, classDone:S.classDone,
+    concl:S.concl, finished:S.finished,
+    name:S.name, cls:S.cls, school:S.school, teacher:S.teacher, group:S.group,
+  })); }catch(e){}
+}
+function load(){
+  try{
+    const d = JSON.parse(localStorage.getItem(KEY)||'null');
+    if(d) Object.assign(S, d);
+    S.reached = (S.reached && typeof S.reached==='object') ? S.reached : {1:true};
+    S.reached[1] = true;
+    S.coag = clamp(+S.coag||0, 0, 100);
+    S.stir = clamp(+S.stir||0, 0, 100);
+    S.drops = clamp(+S.drops||0, 0, 999);
+    if(!Array.isArray(S.trials)) S.trials = [];
+    if(typeof S.rowDone !== 'object' || S.rowDone === null) S.rowDone = {};
+    if(typeof S.tableSel !== 'object' || S.tableSel === null) S.tableSel = {};
+    if(typeof S.analysis !== 'object' || S.analysis === null) S.analysis = {};
+    if(!Array.isArray(S.classDone)) S.classDone = [];
+    delete S.doneStages;
+  }catch(e){}
+}
+
+/* ===================== PROGRES 0-100% (menu bar lab) ===================== */
+function stageDone(n){
+  switch(n){
+    case 1: return !!(S.observed && S.hypLocked);
+    case 2: return !!S.heaterEverOn;
+    case 3: return !!S.dropsEver;
+    case 4: return !!(S.adukEver || S.stir>10 || S.coag>20);
+    case 5: return ROWS.every((_,i)=>S.rowDone[i]);
+    case 6: return QS.every((_,i)=>(S.analysis[i]||'').trim().length>=8);
+    case 7: return S.classDone.length===CARDS.length;
+    case 8: return !!S.finished;
+  }
+  return false;
+}
+function countDone(){ let n=0; for(let i=1;i<=8;i++) if(stageDone(i)) n++; return n; }
+function calcProgress(){ return Math.round(countDone()/8*1000)/10; }
+function fmtPct(p){ return (p % 1 === 0 ? p.toFixed(0) : p.toFixed(1).replace('.', ',')) + '%'; }
+
+function updateLabProgress(){
+  const p = calcProgress();
+  const fill = document.getElementById('labPFill');
+  const pct  = document.getElementById('labPct');
+  const chip = document.getElementById('labProgChip');
+  if(fill) fill.style.width = p + '%';
+  if(pct)  pct.textContent = fmtPct(p);
+  if(chip) chip.title = `Progres eksperimen: ${fmtPct(p)} — ${countDone()} dari 8 tahapan selesai`;
+}
+function celebrate(n){
+  updateLabProgress();
+  renderStepper();
+  refreshLKPD();
+  if(announced[n]) return;
+  announced[n] = true;
+  const p = calcProgress();
+  toast(n===8
+    ? `🎉 Tahap 8 selesai! Progres penuh: 100% — hebat, Peneliti!`
+    : `🎉 Tahap ${n} selesai! Progres: ${fmtPct(p)} (+12,5%)`, 'ok');
+}
+function syncProgressSilent(){
+  const c = countDone();
+  if(c !== lastSeenCount){
+    lastSeenCount = c;
+    updateLabProgress();
+    renderStepper();
+  }
+}
+
+function toast(msg, type='info'){
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type==='warn'?'warn':type==='ok'?'ok':'');
+  el.textContent = msg;
+  $('#toasts').appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity='0'; setTimeout(()=>el.remove(),400); }, 3400);
+}
+
+/* =========================================================
+   AUDIO MANAGER — musik latar (Backsound1.mp3, loop) +
+   efek klik (Web Audio) + volume + layar penuh.
+   ========================================================= */
+const SND_KEY = 'lab-dadih-sound';
+const sound = Object.assign(
+  { bgm:55, sfx:70, muted:false },
+  (()=>{ try{ return JSON.parse(localStorage.getItem(SND_KEY)||'{}'); }catch(e){ return {}; } })()
+);
+sound.bgm = clamp(+sound.bgm||0, 0, 100);
+sound.sfx = clamp(+sound.sfx||0, 0, 100);
+sound.muted = !!sound.muted;
+
+const bgAudio = new Audio('Backsound1.mp3');   /* letakkan file di folder yang sama */
+bgAudio.loop = true;
+bgAudio.preload = 'auto';
+let bgmStarted = false, bgmMissing = false, audioCtx = null;
+
+bgAudio.addEventListener('error', ()=>{
+  if(bgmMissing) return;
+  bgmMissing = true;
+  toast('🎵 File “Backsound1.mp3” tidak ditemukan — letakkan di folder yang sama dengan aplikasi ini.','warn');
+});
+
+function applySound(){
+  bgAudio.volume = sound.muted ? 0 : sound.bgm/100;
+  try{ bgAudio.muted = sound.muted; }catch(e){}
+  const btn = document.getElementById('btnVolume');
+  if(btn){
+    const icon = (sound.muted || sound.bgm===0) ? 'volume-x' : (sound.bgm<50 ? 'volume-1' : 'volume-2');
+    btn.innerHTML = `<i data-lucide="${icon}"></i>`;
+    btn.classList.toggle('muted-state', sound.muted || sound.bgm===0);
+    btn.title = sound.muted ? 'Suara dibisukan — klik untuk atur' : 'Pengatur Suara';
+  }
+  const bm=document.getElementById('volBgm'), bs=document.getElementById('volSfx');
+  if(bm) bm.value = sound.bgm;
+  if(bs) bs.value = sound.sfx;
+  const bv=document.getElementById('volBgmVal'); if(bv) bv.textContent = sound.bgm+'%';
+  const sv=document.getElementById('volSfxVal'); if(sv) sv.textContent = sound.sfx+'%';
+  const mu=document.getElementById('btnMute');
+  if(mu) mu.innerHTML = sound.muted
+    ? '<i data-lucide="volume-2"></i> Nyalakan Suara'
+    : '<i data-lucide="volume-x"></i> Bisukan Semua';
+  if(window.lucide) lucide.createIcons();
+  try{ localStorage.setItem(SND_KEY, JSON.stringify(sound)); }catch(e){}
+}
+
+function ensureBgm(){
+  if(bgmStarted || bgmMissing) return;
+  bgmStarted = true;
+  applySound();
+  const p = bgAudio.play();
+  if(p && p.catch) p.catch(()=>{ bgmStarted = false; });
+}
+
+function sfxClick(){
+  if(sound.muted || sound.sfx<=0) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(950, t);
+    osc.frequency.exponentialRampToValueAtTime(420, t+0.08);
+    const v = clamp(sound.sfx,0,100)/100 * 0.22;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(Math.max(v,0.001), t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+0.11);
+    osc.connect(g); g.connect(audioCtx.destination);
+    osc.start(t); osc.stop(t+0.12);
+  }catch(e){}
+}
+
+document.addEventListener('pointerdown', e=>{
+  ensureBgm();
+  if(e.target.closest('button, .menu-card, .chip, .dcard, .acid-btn, .stepchip')) sfxClick();
+}, {capture:true});
+
+/* --- wiring kontrol volume --- */
+ $('#btnVolume').addEventListener('click', e=>{
+  e.stopPropagation();
+  $('#sndPop').classList.toggle('hidden');
+});
+document.addEventListener('click', e=>{
+  const cl = document.getElementById('sndCluster');
+  if(cl && !cl.contains(e.target)){
+    const pop = document.getElementById('sndPop');
+    if(pop) pop.classList.add('hidden');
+  }
+});
+ $('#volBgm').addEventListener('input', e=>{
+  sound.bgm = clamp(+e.target.value,0,100);
+  if(sound.bgm>0) sound.muted = false;
+  applySound(); ensureBgm();
+});
+ $('#volSfx').addEventListener('input', e=>{
+  sound.sfx = clamp(+e.target.value,0,100);
+  applySound();
+});
+ $('#btnMute').addEventListener('click', ()=>{
+  sound.muted = !sound.muted;
+  applySound();
+  toast(sound.muted ? '🔇 Semua suara dibisukan' : '🔊 Suara dinyalakan');
+});
+
+/* --- layar penuh (responsif) --- */
+ $('#btnFullscreen').addEventListener('click', ()=>{
+  const doc = document, el = doc.documentElement;
+  const isFs = !!(doc.fullscreenElement || doc.webkitFullscreenElement);
+  try{
+    if(!isFs){
+      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+      if(req){
+        const r = req.call(el);
+        if(r && r.catch) r.catch(()=>toast('Layar penuh tidak diizinkan perangkat ini.','warn'));
+      } else {
+        toast('Layar penuh tidak didukung perangkat ini.','warn');
+      }
+    } else {
+      const ex = doc.exitFullscreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+      if(ex) ex.call(doc);
+    }
+  }catch(err){ toast('Layar penuh tidak didukung perangkat ini.','warn'); }
+});
+function syncFsIcon(){
+  const fs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  const b = document.getElementById('btnFullscreen');
+  if(b){
+    b.innerHTML = `<i data-lucide="${fs?'minimize-2':'maximize-2'}"></i>`;
+    b.title = fs ? 'Keluar Layar Penuh' : 'Layar Penuh';
+  }
+  if(window.lucide) lucide.createIcons();
+}
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev, syncFsIcon));
+
+/* ===================== LOADING PAGE 0% → 100% (±4,2 dtk) ===================== */
+function runLoader(){
+  const DUR = 4200;
+  const t0  = performance.now();
+  const fill = $('#loaderFill'), pct = $('#loaderPct'), msg = $('#loaderMsg');
+  const MSGS = [
+    [0,  'Menghidupkan laboratorium virtual…'],
+    [16, 'Menyiapkan gelas beker dan susu segar…'],
+    [34, 'Memeriksa pemanas dan termometer…'],
+    [52, 'Menuang cuka serta air jeruk…'],
+    [70, 'Mengkalibrasi lensa pengamatan…'],
+    [88, 'Semua siap! Membuka pintu lab…'],
+  ];
+  function frame(now){
+    const t = Math.min(1, (now - t0) / DUR);
+    const p = Math.round(100 * (1 - Math.pow(1 - t, 1.6)));
+    fill.style.width = p + '%';
+    pct.textContent  = p + '%';
+    for(let i = MSGS.length-1; i >= 0; i--){
+      if(p >= MSGS[i][0]){ msg.textContent = MSGS[i][1]; break; }
+    }
+    if(t < 1){
+      requestAnimationFrame(frame);
+    } else {
+      fill.style.width = '100%'; pct.textContent = '100%';
+      msg.textContent  = 'Selamat bereksperimen! 🧪';
+      setTimeout(()=>{
+        $('#loader').classList.add('done');
+        setTimeout(()=>{
+          $('#loader').classList.add('hidden');
+          document.body.classList.remove('loading-open');
+          showHome();
+        }, 560);
+      }, 420);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ===================== HALAMAN UTAMA ===================== */
+function showHomeView(id){
+  $$('#home .home-view').forEach(v=>v.classList.remove('active'));
+  $('#'+id).classList.add('active');
+  $('#home').scrollTop = 0;
+  window.scrollTo({top:0, behavior:'auto'});
+}
+function showHome(){
+  showHomeView('viewMenu');
+  document.body.classList.add('home-open');
+  $('#home').classList.remove('hidden');
+}
+function hideHome(){
+  $('#home').classList.add('hidden');
+  document.body.classList.remove('home-open');
+}
+function isRegistered(){ return !!(S.name && S.cls && S.school && S.teacher); }
+
+ $('#menuTujuan').addEventListener('click', ()=>showHomeView('viewTujuan'));
+ $('#menuPanduan').addEventListener('click', ()=>showHomeView('viewPanduan'));
+function openReg(edit=false){
+  regIsEdit = edit;
+  showHome();
+  showHomeView('viewReg');
+  $('#regName').value   = S.name    || '';
+  $('#regCls').value    = S.cls     || '';
+  $('#regSchool').value = S.school  || '';
+  $('#regTeacher').value= S.teacher || '';
+  $('#regGroup').value  = S.group   || '';
+  $$('#regForm input').forEach(i=>i.classList.remove('err'));
+}
+ $('#menuMasuk').addEventListener('click', ()=>openReg(false));
+ $('#tujuanNext').addEventListener('click', ()=>openReg(false));
+ $('#panduanNext').addEventListener('click', ()=>openReg(false));
+ $$('[data-back]').forEach(b=>b.addEventListener('click', ()=>showHomeView('viewMenu')));
+ $('#btnHome').addEventListener('click', showHome);
+
+/* ===================== REGISTRASI PENELITI ===================== */
+ $$('#regForm input').forEach(i=>i.addEventListener('input', ()=>i.classList.remove('err')));
+ $('#regForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const req = [['regName','name'],['regCls','cls'],['regSchool','school'],['regTeacher','teacher']];
+  let bad = [];
+  req.forEach(([id,key])=>{
+    const el = $('#'+id), v = el.value.trim();
+    if(!v){ bad.push(el); } else { S[key] = v; }
+  });
+  if(bad.length){
+    bad.forEach(el=>el.classList.add('err'));
+    toast('Lengkapi dulu data bertanda * ya!','warn');
+    bad[0].focus();
+    return;
+  }
+  S.group = $('#regGroup').value.trim();
+  save();
+  hideHome();
+  window.scrollTo({top:0, behavior:'auto'});
+  updateIdChip();
+  updateLabProgress();
+  refreshLKPD(true);
+  if(regIsEdit){
+    regIsEdit = false;
+    toast('Data peneliti diperbarui ✅', 'ok');
+    openDrawer('lkpd');
+  } else {
+    const sisa = countDone()>0 ? ` Progresmu ${fmtPct(calcProgress())} — lanjutkan!` : ' Klik gelas beker untuk mulai mengamati! 🔬';
+    toast(`Selamat datang di laboratorium, ${S.name}!${sisa}`, 'ok');
+  }
+});
+function updateIdChip(){
+  const chip = $('#idChip');
+  if(isRegistered()){
+    $('#idChipText').textContent = `${S.name} · ${S.cls}`;
+    chip.classList.remove('hidden');
+  } else {
+    chip.classList.add('hidden');
+  }
+}
+
+/* ---------- stepper ---------- */
+function unlocked(){
+  const c = {
+    1:true,
+    2:(S.hypLocked && S.observed) || S.reached[2],
+    3:S.heaterEverOn || S.reached[3],
+    4:S.drops>=3 || S.reached[4],
+    5:(S.drops>=1 && (S.stir>10 || S.coag>20)) || S.reached[5],
+    6:Object.keys(S.rowDone).length===ROWS.length || S.reached[6],
+    7:QS.every((_,i)=>(S.analysis[i]||'').trim().length>=8) || S.reached[7],
+    8:S.classDone.length===CARDS.length || S.reached[8],
+  };
+  for(const k in c) if(c[k]) S.reached[k]=true;
+  return c;
+}
+function renderStepper(){
+  const u = unlocked();
+  const done = {};
+  for(let i=1;i<=8;i++) done[i] = stageDone(i);
+  $('#stepper').innerHTML = STEPS.map((t,i)=>{
+    const n=i+1; let st = done[n]?'done':(u[n]?'':'locked'); if(n===S.step) st+=' active';
+    const icon = done[n] ? '<i data-lucide="check"></i>' : (u[n]?'':'<i data-lucide="lock"></i>');
+    return `<button class="stepchip ${st}" data-step="${n}"><span class="num">${u[n]&&!done[n]?n:''}</span>${icon}${t}</button>`;
+  }).join('');
+  $$('#stepper .stepchip').forEach(b=>b.addEventListener('click',()=>{
+    const n=+b.dataset.step; if(unlocked()[n]) gotoStep(n); else toast('Selesaikan tahap sebelumnya dulu ya!','warn');
+  }));
+  if(window.lucide) lucide.createIcons();
+}
+function gotoStep(n){
+  S.step=n; $$('.step-card').forEach(c=>c.classList.remove('active'));
+  $('#step'+n).classList.add('active');
+  renderStepper(); updateDockLocks();
+  if(n===8) renderSummary();
+  $('#stepPanel').scrollIntoView({behavior:'smooth', block:'start'});
+  if(n===1 && !S.observed) $('#beakerPulse').classList.add('on'); else $('#beakerPulse').classList.remove('on');
+  save();
+}
+
+function updateDockLocks(){
+  const u = unlocked();
+  $('#dockHeater').classList.toggle('locked', !u[2]);
+  $('#dockAcid').classList.toggle('locked', !u[3]);
+  $('#dockStir').classList.toggle('locked', !u[4]);
+  $('#dockHeater .dock-lock').classList.toggle('hidden', !!u[2]);
+  $('#dockAcid  .dock-lock').classList.toggle('hidden', !!u[3]);
+  $('#dockStir  .dock-lock').classList.toggle('hidden', !!u[4]);
+  $('#btnRecord').disabled = S.drops<1;
+  $('#btnZoom').disabled = !S.observed;
+}
+
+/* ---------- scene ---------- */
+const curdData = [];
+(function buildCurds(){
+  const g = $('#curds'); const NS='http://www.w3.org/2000/svg';
+  for(let i=0;i<26;i++){
+    const e = document.createElementNS(NS,'ellipse');
+    e.setAttribute('cx', 418+Math.random()*104);
+    e.setAttribute('cy', 254+Math.random()*88);
+    e.setAttribute('rx', 7+Math.random()*11); e.setAttribute('ry', 5.5+Math.random()*8);
+    e.setAttribute('fill','#FFFDF6'); e.setAttribute('stroke','#E4D8B8'); e.setAttribute('stroke-width','1.6');
+    e.style.animationDelay = (i*0.27)+'s';
+    const gwrap = document.createElementNS(NS,'g');
+    gwrap.setAttribute('class','curd'); gwrap.appendChild(e); g.appendChild(gwrap);
+    curdData.push({el:gwrap, th: 4+Math.random()*82});
+  }
+})();
+
+setInterval(()=>{
+  if(heaterOn){
+    temp += clamp((tempTarget - temp)*0.03, 0, 1.6);
+    if(Math.abs(temp-tempTarget)<0.06) temp=tempTarget;
+  } else {
+    temp += (27 - temp)*0.009;
+    if(Math.abs(temp-27)<0.05) temp=27;
+  }
+  if(S.drops>0){
+    const acF = S.acid==='jeruk' ? 1.15 : 1.0;
+    const rate = (0.06 + 0.05*S.drops) * acF * (0.25 + temp/85) * (S.stirring?1.8:1);
+    S.coag = clamp(S.coag + rate, 0, 100);
+  }
+  if(!S.adukEver && (S.stir>10 || S.coag>20)){
+    S.adukEver = true; save(); celebrate(4);
+  }
+  updateScene(); updateReadouts();
+  syncProgressSilent();
+  refreshLKPD();
+}, 100);
+
+function sepLevel(){ return clamp((S.coag-35)/65,0,1) * (0.35 + 0.65*S.stir/100); }
+
+function updateScene(){
+  const sep = sepLevel();
+  $('#liquid').setAttribute('fill-opacity', (1 - sep*0.5).toFixed(2));
+  const whey = $('#whey');
+  whey.setAttribute('height', (sep*30).toFixed(1));
+  whey.setAttribute('opacity', Math.min(1, sep*1.35).toFixed(2));
+  $('#steam').style.opacity = clamp((temp-52)/32, 0, 0.9).toFixed(2);
+  $('#bubbles').style.display = temp>=75 ? '' : 'none';
+  curdData.forEach(c => c.el.classList.toggle('show', S.coag > c.th));
+  $('#heaterLamp').setAttribute('fill', heaterOn ? '#FFCF33' : '#5E6E7C');
+  $('#lcdScene').textContent = fmt1(temp);
+  $('#safetyStrip').classList.toggle('hidden', !(heaterOn || temp>=60));
+  $('#spoon').classList.toggle('stirring', S.stirring);
+}
+
+function updateReadouts(){
+  $('#tempNow').textContent = fmt1(temp)+'°';
+  $('#dropsTotal').textContent = S.drops;
+  $('#stirBar').style.width = S.stir+'%';
+}
+
+ $('#btnHeater').addEventListener('click', ()=>{
+  if($('#dockHeater').classList.contains('locked')){ toast('Selesaikan Tahap 1 dulu ya!','warn'); return; }
+  heaterOn = !heaterOn;
+  $('#btnHeater').innerHTML = heaterOn
+    ? '<i data-lucide="power-off"></i> Matikan Pemanas'
+    : '<i data-lucide="power"></i> Nyalakan Pemanas';
+  if(window.lucide) lucide.createIcons();
+  if(heaterOn && !S.heaterEverOn){
+    S.heaterEverOn = true; save();
+    celebrate(2);
+    toast('⚠️ Hati-hati! Permukaan pemanas bersuhu tinggi.','warn');
+  }
+  save(); renderStepper();
+});
+ $('#tempTarget').addEventListener('input', e=>{
+  tempTarget = +e.target.value;
+  $('#targetVal').textContent = tempTarget+' °C';
+});
+
+function setAcid(a){
+  if($('#dockAcid').classList.contains('locked')){ toast('Buka di Tahap 3 ya!','warn'); return; }
+  S.acid = a;
+  $$('.acid-btn').forEach(b=>b.classList.toggle('sel', b.dataset.acid===a));
+  $('#pipetLiquid').setAttribute('fill', a==='cuka' ? '#F1EFD8' : '#F4E27A');
+  toast(a==='cuka' ? 'Pipet diisi cuka 🧪' : 'Pipet diisi air jeruk 🍋');
+  save();
+}
+ $$('.acid-btn').forEach(b=>b.addEventListener('click',()=>setAcid(b.dataset.acid)));
+ $('#bottleVinegar').addEventListener('click',()=>setAcid('cuka'));
+ $('#lemonBtn').addEventListener('click',()=>setAcid('jeruk'));
+ $('#dropCount').addEventListener('input',e=>{ $('#dropVal').textContent = e.target.value+' tetes'; });
+
+ $('#btnPour').addEventListener('click', ()=>{
+  if($('#dockAcid').classList.contains('locked')){ toast('Selesaikan tahap sebelumnya dulu!','warn'); return; }
+  if(!S.acid){ toast('Pilih cuka atau air jeruk dulu!','warn'); return; }
+  if(pouring) return;
+  const n = +$('#dropCount').value;
+  pouring = true; $('#btnPour').disabled = true;
+  const pipet = $('#pipet');
+  pipet.classList.add('pouring');
+  if(S.drops===0) S.tempAtPour = Math.round(temp);
+  setTimeout(()=>{
+    let i=0;
+    const iv = setInterval(()=>{
+      makeDrop(); S.drops++;
+      if(++i>=n){
+        clearInterval(iv);
+        setTimeout(()=>{
+          pipet.classList.remove('pouring'); pouring=false; $('#btnPour').disabled=false;
+          S.dropsEver = true;
+          celebrate(3);
+          updateDockLocks(); save();
+        }, 500);
+      }
+    }, 300);
+  }, 460);
+});
+function makeDrop(){
+  const NS='http://www.w3.org/2000/svg';
+  const c = document.createElementNS(NS,'circle');
+  c.setAttribute('cx', 474); c.setAttribute('cy', 196); c.setAttribute('r', 4.5);
+  c.setAttribute('fill', S.acid==='cuka' ? '#EDEBD2' : '#F4E27A');
+  c.setAttribute('stroke','#C9B968'); c.setAttribute('stroke-width','1');
+  c.setAttribute('class','drop-anim');
+  $('#dropLayer').appendChild(c);
+  setTimeout(()=>c.remove(), 650);
+}
+
+const stirBtn = $('#btnStir');
+stirBtn.addEventListener('pointerdown', e=>{
+  if($('#dockStir').classList.contains('locked')){ toast('Tersedia di Tahap 4!','warn'); return; }
+  S.stirring = true;
+  try{ stirBtn.setPointerCapture(e.pointerId); }catch(err){}
+  $('#stirNote').textContent = 'Sendok sedang mengaduk… amati gumpalannya!';
+});
+['pointerup','pointercancel'].forEach(ev=>stirBtn.addEventListener(ev, ()=>{
+  if(!S.stirring) return;
+  S.stirring = false;
+  $('#stirNote').textContent = 'Tekan & tahan tombol — sendok akan bergerak mengaduk campuran.';
+  updateDockLocks(); save(); renderStepper();
+}));
+setInterval(()=>{ if(S.stirring){ S.stir = clamp(S.stir + 2.2, 0, 100); updateReadouts(); } }, 100);
+
+ $('#beakerHit').addEventListener('click', ()=>{
+  if(S.step!==1){ if(S.step>1) gotoStep(1); return; }
+  if(!S.observed){
+    $('#obsCard').classList.remove('hidden');
+    $('#stepPanel').scrollIntoView({behavior:'smooth', block:'start'});
+    toast('Lembar pengamatan terbuka — perhatikan keempat aspeknya!');
+  }
+});
+ $('#posterSafety').addEventListener('click', ()=>$('#safetyModal').classList.add('open'));
+ $('#btnSafetyClose').addEventListener('click', ()=>$('#safetyModal').classList.remove('open'));
+ $('#safetyStrip').addEventListener('click', ()=>$('#safetyModal').classList.add('open'));
+ $('#clipLKPD').addEventListener('click', ()=>openDrawer('lkpd'));
+
+ $('#btnObserved').addEventListener('click', ()=>{
+  if(S.observed) return;
+  S.observed = true; $('#beakerPulse').classList.remove('on');
+  $('#btnObserved').disabled = true;
+  $('#btnObserved').innerHTML = '<i data-lucide="check-circle-2"></i> Selesai diamati';
+  $('#hypWrap').classList.remove('hidden');
+  if(window.lucide) lucide.createIcons();
+  save(); renderStepper();
+  toast('Bagus! Sekarang tulis prediksimu.');
+});
+ $('#hypText').addEventListener('input', e=>{
+  S.hyp = e.target.value;
+  $('#hypCount').textContent = S.hyp.trim().length+' karakter';
+});
+ $('#btnLockHyp').addEventListener('click', ()=>{
+  if(S.hyp.trim().length < 15){ toast('Tulis prediksimu lebih lengkap dulu (min. 15 karakter).','warn'); return; }
+  S.hypLocked = true;
+  celebrate(1);
+  save(); gotoStep(2);
+  toast('Hipotesis terkunci! Mari kita uji lewat eksperimen. 🔬','ok');
+});
+
+ $('#btnTo3').addEventListener('click', ()=>{
+  $('#coldNote').classList.toggle('hidden', temp>=40);
+  gotoStep(3);
+});
+ $('#btnTo4').addEventListener('click', ()=>gotoStep(4));
+ $('#btnTo5').addEventListener('click', ()=>gotoStep(5));
+
+/* ---------- tahap 5 ---------- */
+function renderTable(){
+  const w = $('#tableWrap');
+  w.innerHTML = `<table class="obs-table"><thead><tr>
+    <th>Aspek yang Diamati</th><th>Sebelum Perlakuan</th><th>Sesudah Perlakuan</th></tr></thead><tbody>${
+    ROWS.map((r,ri)=>`<tr data-row="${ri}" class="${S.rowDone[ri]?'row-done':''}">
+      <td>${r.label}</td>
+      <td><div class="chips">${r.before.map((o,oi)=>`<button class="chip" data-r="${ri}" data-c="b" data-o="${oi}">${o}</button>`).join('')}</div></td>
+      <td><div class="chips">${r.after.map((o,oi)=>`<button class="chip" data-r="${ri}" data-c="a" data-o="${oi}">${o}</button>`).join('')}</div></td>
+    </tr>`).join('')}</tbody></table>`;
+  w.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
+    if(c.disabled) return;
+    const ri=c.dataset.r, col=c.dataset.c, oi=+c.dataset.o;
+    S.tableSel[ri] = S.tableSel[ri]||{}; S.tableSel[ri][col]=oi;
+    c.parentElement.querySelectorAll('.chip').forEach(x=>x.classList.remove('sel','ok','bad'));
+    c.classList.add('sel'); save();
+  }));
+  refreshTableSel();
+}
+function refreshTableSel(){
+  for(const ri in S.tableSel) for(const c in S.tableSel[ri]){
+    const el = $(`#tableWrap .chip[data-r="${ri}"][data-c="${c}"][data-o="${S.tableSel[ri][c]}"]`);
+    if(el) el.classList.add('sel');
+  }
+}
+ $('#btnCheckTable').addEventListener('click', ()=>{
+  $$('#tableWrap .hint-row').forEach(h=>h.remove());
+  const msg = $('#tableMsg');
+  for(let ri=0; ri<ROWS.length; ri++){
+    const sel = S.tableSel[ri]||{};
+    if(sel.b===undefined || sel.a===undefined){
+      msg.innerHTML = `<div class="dnd-msg retry">Masih ada sel yang belum diisi. Lengkapi dulu ya!</div>`;
+      return;
+    }
+  }
+  let allOk = true;
+  $$('#tableWrap tbody tr').forEach(tr=>{
+    const ri = +tr.dataset.row, sel = S.tableSel[ri]||{}, r = ROWS[ri];
+    const bOk = sel.b===r.bOk, aOk = sel.a===r.aOk;
+    tr.querySelectorAll('.chip').forEach(ch=>{
+      const col = ch.dataset.c, oi = +ch.dataset.o;
+      ch.classList.remove('ok','bad');
+      if(sel[col]===oi) ch.classList.add((col==='b' ? bOk : aOk) ? 'ok' : 'bad');
+    });
+    const ok = bOk && aOk;
+    tr.classList.toggle('row-done', ok);
+    if(!ok){
+      allOk = false;
+      const hint = document.createElement('tr');
+      hint.className = 'hint-row';
+      hint.innerHTML = `<td colspan="3"><div class="row-hint">🔄 Mari amati kembali aspek <b>${r.label}</b>. ${r.hint}</div></td>`;
+      tr.after(hint);
+    }
+  });
+  if(allOk){
+    S.rowDone = {};
+    ROWS.forEach((_,i)=>S.rowDone[i]=true);
+    $$('#tableWrap .chip').forEach(c=>c.disabled=true);
+    msg.innerHTML = `<div class="dnd-msg good">✅ Luar biasa! Seluruh pengamatanmu tepat dan terdokumentasi. Lanjutkan ke analisis!</div>`;
+    $('#btnTo6').disabled = false;
+    celebrate(5);
+  } else {
+    S.rowDone = {};
+    $('#btnTo6').disabled = true;
+    msg.innerHTML = `<div class="dnd-msg retry">💡 Beberapa baris perlu dicek ulang — baca petunjuknya, lalu amati lagi beker & lensa zoom. Jawaban tidak diberikan langsung; kamu pasti menemukannya!</div>`;
+  }
+  save(); renderStepper();
+});
+ $('#btnTo6').addEventListener('click', ()=>gotoStep(6));
+
+/* ---------- tahap 6 ---------- */
+function renderAnalysis(){
+  $('#anWrap').innerHTML = QS.map((q,i)=>`
+    <div class="qblock">
+      <div class="q"><span class="qn">${i+1}</span><span>${q.q}</span></div>
+      <textarea data-q="${i}" placeholder="Tulis jawabanmu di sini…">${escapeHTML(S.analysis[i]||'')}</textarea>
+      <div class="hintbox hidden" data-hint="${i}"></div>
+      <button class="hint-btn" data-hb="${i}">💡 Petunjuk</button>
+    </div>`).join('');
+  $$('#anWrap textarea').forEach(t=>t.addEventListener('input',e=>{
+    S.analysis[e.target.dataset.q]=e.target.value; save(); checkAnalysis();
+  }));
+  $$('#anWrap .hint-btn').forEach(b=>b.addEventListener('click',()=>{
+    const i=+b.dataset.hb; S.hintLv[i]=Math.min((S.hintLv[i]||0)+1,2);
+    const hb=$(`.hintbox[data-hint="${i}"]`);
+    hb.classList.remove('hidden');
+    hb.textContent = S.hintLv[i]===1 ? QS[i].h1 : QS[i].h2;
+    if(S.hintLv[i]===2) b.textContent='💡 Petunjuk (maksimal)';
+    save();
+  }));
+  for(const i in S.hintLv){
+    const hb=$(`.hintbox[data-hint="${i}"]`), b=$(`.hint-btn[data-hb="${i}"]`);
+    if(hb && S.hintLv[i]>0){ hb.classList.remove('hidden'); hb.textContent = S.hintLv[i]===1?QS[i].h1:QS[i].h2; }
+    if(b && S.hintLv[i]>=2) b.textContent='💡 Petunjuk (maksimal)';
+  }
+  checkAnalysis();
+}
+function checkAnalysis(){
+  const all = QS.every((_,i)=>(S.analysis[i]||'').trim().length>=8);
+  $('#btnTo7').disabled = !all;
+  if(all) celebrate(6);
+}
+ $('#btnTo7').addEventListener('click', ()=>gotoStep(7));
+
+/* ---------- tahap 7 ---------- */
+function renderCards(){
+  const rack = $('#cardRack');
+  rack.innerHTML='';
+  $$('#zonePhys .placeholder, #zoneChem .placeholder').forEach(p=>p.remove());
+  CARDS.forEach(c=>{
+    const el=document.createElement('div'); el.className='dcard'; el.dataset.id=c.id; el.textContent=c.t;
+    if(S.classDone.includes(c.id)){ el.classList.add('correct'); $('#zone'+(c.cat==='chem'?'Chem':'Phys')).appendChild(el); }
+    else rack.appendChild(el);
+    attachDrag(el);
+  });
+  tidyZones(); updateClassify();
+}
+function tidyZones(){
+  ['zonePhys','zoneChem','cardRack'].forEach(id=>{
+    const z=$('#'+id); const ph=z.querySelector('.placeholder');
+    const has = [...z.children].some(c=>c.classList.contains('dcard'));
+    if(!has && !ph){ const p=document.createElement('p'); p.className='placeholder';
+      p.textContent = id==='cardRack' ? 'Semua kartu telah dikelompokkan' : 'Seret bukti ke sini'; z.appendChild(p); }
+    else if(has && ph) ph.remove();
+  });
+}
+let dragCtx=null;
+function attachDrag(el){
+  el.addEventListener('pointerdown', e=>{
+    if(el.classList.contains('correct')) return;
+    e.preventDefault();
+    const r = el.getBoundingClientRect();
+    const ghost = el.cloneNode(true);
+    ghost.classList.add('dcard-ghost');
+    ghost.style.width = r.width+'px';
+    ghost.style.left = (e.clientX-r.width/2)+'px';
+    ghost.style.top  = (e.clientY-18)+'px';
+    document.body.appendChild(ghost);
+    el.classList.add('dragging');
+    dragCtx = {el, ghost, offY:e.clientY-r.top, offX:r.width/2};
+    try{ el.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  el.addEventListener('pointermove', e=>{
+    if(!dragCtx) return;
+    dragCtx.ghost.style.left = (e.clientX-dragCtx.offX)+'px';
+    dragCtx.ghost.style.top  = (e.clientY-dragCtx.offY)+'px';
+    $$('.zone').forEach(z=>z.classList.toggle('over',
+      e.clientX>=z.getBoundingClientRect().left && e.clientX<=z.getBoundingClientRect().right &&
+      e.clientY>=z.getBoundingClientRect().top  && e.clientY<=z.getBoundingClientRect().bottom));
+  });
+  el.addEventListener('pointerup', e=>{
+    if(!dragCtx) return;
+    const {el:card, ghost} = dragCtx; dragCtx=null;
+    ghost.remove(); card.classList.remove('dragging');
+    $$('.zone').forEach(z=>z.classList.remove('over'));
+    let target=null;
+    $$('.zone').forEach(z=>{
+      const r=z.getBoundingClientRect();
+      if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom) target=z;
+    });
+    if(target){
+      target.appendChild(card); tidyZones();
+      const c = CARDS.find(x=>x.id===card.dataset.id);
+      const ok = (c.cat==='chem' && target.id==='zoneChem') || (c.cat==='phys' && target.id==='zonePhys');
+      const msg=$('#classifyMsg');
+      if(ok){
+        card.classList.add('correct');
+        if(!S.classDone.includes(c.id)) S.classDone.push(c.id);
+        msg.innerHTML = `<div class="dnd-msg good">✅ Pengamatanmu tepat! Coba jelaskan bukti ilmiah yang mendukung jawabanmu${S.classDone.length===CARDS.length?' — semua kartu sudah tepat!':'.'}</div>`;
+        if(S.classDone.length===CARDS.length) celebrate(7);
+        updateClassify(); save(); renderStepper();
+      } else {
+        card.classList.add('wrong');
+        setTimeout(()=>{ card.classList.remove('wrong'); $('#cardRack').appendChild(card); tidyZones(); }, 850);
+        msg.innerHTML = `<div class="dnd-msg retry">🔄 Mari amati kembali perubahan yang terjadi. Apakah hanya <b>bentuknya</b> yang berubah, atau terdapat <b>perubahan sifat zat</b>? Kartu ini belum pada tempatnya.</div>`;
+      }
+    }
+  });
+}
+function updateClassify(){
+  const all = S.classDone.length===CARDS.length;
+  if(all || S.reflect) $('#reflectWrap').classList.remove('hidden');
+}
+ $('#reflectText').addEventListener('input',e=>{ S.reflect=e.target.value; save(); });
+ $('#btnTo8').addEventListener('click', ()=>gotoStep(8));
+
+/* ---------- tahap 8 ---------- */
+function renderSummary(){
+  const last = S.trials[S.trials.length-1];
+  const obsN = Object.keys(S.rowDone).length;
+  $('#flowSummary').innerHTML = `
+    <div class="lkpd-sec"><h3>1. Hipotesismu</h3><div class="ans">${S.hyp?escapeHTML(S.hyp):'—'}</div></div>
+    <div class="lkpd-sec"><h3>2. Eksperimen</h3><div class="ans">${S.trials.length} percobaan tercatat${
+      last?` — percobaan terakhir: ${last.drops} tetes ${last.acid} pada suhu ±${last.temp} °C. Hasil: <b>${last.result}</b>.`:' (belum ada yang direkam di Jurnal).'}</div></div>
+    <div class="lkpd-sec"><h3>3. Pengamatan</h3><div class="ans">${obsN} dari ${ROWS.length} aspek terkonfirmasi tepat melalui pemeriksaan.</div></div>
+    <div class="lkpd-sec"><h3>4. Analisis</h3><div class="ans">${QS.filter((_,i)=>(S.analysis[i]||'').trim().length>=8).length} dari ${QS.length} pertanyaan telah kamu jawab.</div></div>
+    <div class="lkpd-sec"><h3>5. Progres Eksperimen</h3><div class="ans"><b>${fmtPct(calcProgress())}</b> — ${countDone()} dari 8 tahapan selesai.</div></div>`;
+}
+ $('#conclText').addEventListener('input',e=>{ S.concl=e.target.value; save(); });
+ $('#btnFinish').addEventListener('click', ()=>{
+  if(S.concl.trim().length<20){ toast('Tuliskan kesimpulanmu dengan lebih lengkap (min. 20 karakter).','warn'); return; }
+  S.finished = true;
+  celebrate(8);
+  save(); renderStepper();
+  $('#finalSummary').textContent = `Progres Eksperimen: ${fmtPct(calcProgress())} (8/8 tahap) · Kesimpulanmu: “${S.concl.trim()}”`;
+  $('#finalModal').classList.add('open');
+});
+ $('#btnFinalLKPD').addEventListener('click', ()=>{ $('#finalModal').classList.remove('open'); openDrawer('lkpd'); });
+ $('#btnEndExp').addEventListener('click', ()=>{
+  $('#finalModal').classList.remove('open');
+  $('#confirmModal').classList.add('open');
+});
+
+/* ---------- jurnal ---------- */
+function resultLabel(){
+  const sep = sepLevel();
+  if(S.coag<15) return 'Tidak / hampir tidak menggumpal';
+  if(S.coag<45) return 'Gumpalan sedikit';
+  if(S.coag<80) return 'Gumpalan banyak';
+  return sep>0.6 ? 'Dadih padat, whey terpisah jelas' : 'Gumpalan banyak, belum terpisah jelas';
+}
+ $('#btnRecord').addEventListener('click', ()=>{
+  if(S.drops<1){ toast('Belum ada tetesan yang ditambahkan.','warn'); return; }
+  S.trials.push({ n:S.trials.length+1, acid:S.acid||'-', drops:S.drops,
+    temp:S.tempAtPour??Math.round(temp), coag:Math.round(S.coag), result:resultLabel() });
+  toast('Percobaan #'+S.trials.length+' tercatat! Becker dikosongkan — coba variabel lain.','ok');
+  heaterOn = false;
+  $('#btnHeater').innerHTML = '<i data-lucide="power"></i> Nyalakan Pemanas';
+  if(window.lucide) lucide.createIcons();
+  S.drops=0; S.coag=0; S.stir=0; S.stirring=false; S.tempAtPour=null; temp=27;
+  $('#stirBar').style.width='0%';
+  $('#stirNote').textContent='Tekan & tahan tombol — sendok akan bergerak mengaduk campuran.';
+  updateLabProgress(); renderStepper(); updateDockLocks(); save();
+});
+function trialTableHTML(){
+  if(!S.trials.length) return `<div class="trial-empty">Belum ada percobaan yang direkam. Tekan <b>“Rekam & Ulangi Percobaan”</b> di lab untuk memulai perbandingan variabel.</div>`;
+  return `<table class="trial-table"><tr><th>No</th><th>Bahan</th><th>Tetes</th><th>Suhu</th><th>Hasil</th></tr>${
+    S.trials.map(t=>`<tr><td>${t.n}</td><td>${escapeHTML(String(t.acid))}</td><td>${t.drops}</td><td>${t.temp} °C</td><td>${escapeHTML(t.result)}</td></tr>`).join('')}</table>`;
+}
+
+/* =========================================================
+   SINKRONISASI LKPD — REAL-TIME
+   ========================================================= */
+function lkpdSig(){
+  return [
+    S.name,S.cls,S.school,S.teacher,S.group,
+    S.hyp, S.hypLocked?1:0,
+    JSON.stringify(S.tableSel),
+    S.acid||'', S.drops, Math.round(S.coag), S.tempAtPour??'',
+    S.trials.length, JSON.stringify(S.trials), JSON.stringify(S.analysis),
+    S.classDone.join(','), S.reflect, S.concl,
+    S.dropsEver?1:0, S.adukEver?1:0,
+    Object.keys(S.rowDone).length, countDone()
+  ].join('|');
+}
+function refreshLKPD(force=false){
+  if(drawerMode!=='lkpd') return;
+  const ae = document.activeElement;
+  if(!force && ae && $('#drawerBody').contains(ae)) return;
+  const sig = lkpdSig();
+  if(force || sig !== lkpdSignature){
+    lkpdSignature = sig;
+    openDrawer('lkpd', true);
+  }
+}
+
+/* ---------- drawer: LKPD & Jurnal ---------- */
+function regIdHTML(){
+  const item = (l,v)=>`<div class="reg-item"><span>${l}</span><b>${v?escapeHTML(v):'—'}</b></div>`;
+  return `<div class="reg-grid">
+    ${item('Nama', S.name)}${item('Kelas', S.cls)}
+    ${item('Sekolah', S.school)}${item('Nama Guru', S.teacher)}
+    ${item('Kelompok', S.group || '—')}
+    ${item('Progres', fmtPct(calcProgress()) + ' (' + countDone() + '/8 tahap)')}
+  </div>`;
+}
+function lkpdStatusHTML(){
+  const fHyp  = !!(S.hyp && S.hyp.trim());
+  const fTbl  = ROWS.every((_,i)=>{const s=S.tableSel[i]||{}; return s.b!==undefined && s.a!==undefined;});
+  const nAn   = QS.filter((_,i)=>(S.analysis[i]||'').trim().length>=8).length;
+  const nCls  = S.classDone.length;
+  const fCon  = !!(S.concl && S.concl.trim());
+  const chip=(ok,label)=>`<span class="sync-chip ${ok?'on':''}"><i data-lucide="${ok?'check-circle-2':'circle-dashed'}"></i>${label}</span>`;
+  return `<div class="lkpd-status">
+    <b>Status Pengisian (otomatis dari Lab Maya)</b>
+    <div class="sync-chips">
+      ${chip(fHyp,'Hipotesis')}
+      ${chip(fTbl,'Tabel Pengamatan')}
+      ${chip(nAn===QS.length,`Analisis ${nAn}/${QS.length}`)}
+      ${chip(nCls===CARDS.length,`Klasifikasi ${nCls}/${CARDS.length}`)}
+      ${chip(fCon,'Kesimpulan')}
+    </div>
+  </div>`;
+}
+function expDataHTML(){
+  const kv = (l,v)=>`<tr><th>${l}</th><td>${v}</td></tr>`;
+  const lastAcid = S.acid || (S.trials.length ? S.trials[S.trials.length-1].acid : null);
+  const totDrops = S.trials.reduce((a,t)=>a+(+t.drops||0),0) + (S.drops||0);
+  const temps = [...S.trials.map(t=>+t.temp||0), ...(S.tempAtPour!=null?[S.tempAtPour]:[])].filter(x=>x>0);
+  const maxTemp = temps.length ? Math.max(...temps) : null;
+  const coags = [...S.trials.map(t=>(+t.coag||0)), Math.round(S.coag)];
+  const bestCoag = Math.max(...coags);
+  const bestTrial = S.trials.find(t=>(+t.coag||0)===bestCoag);
+  const bestLabel = bestTrial ? escapeHTML(bestTrial.result) : (totDrops>0 ? escapeHTML(resultLabel()) : '');
+  const tahapStr = STEPS.map((t,i)=>stageDone(i+1) ? `${i+1}. ${t} ✓` : `${i+1}. ${t}`).join(' · ');
+  return `<table class="trial-table">
+    ${kv('Bahan asam yang digunakan', lastAcid ? escapeHTML(String(lastAcid)) : '<i>belum digunakan</i>')}
+    ${kv('Total tetes seluruh percobaan', totDrops>0 ? totDrops+' tetes' : '<i>belum ada</i>')}
+    ${kv('Tetes dalam beker saat ini', S.drops>0 ? S.drops+' tetes' : '0 — beker kosong / baru')}
+    ${kv('Suhu tertinggi saat menuang', maxTemp!=null ? '±'+maxTemp+' °C' : '<i>belum menuang</i>')}
+    ${kv('Penggumpalan terbaik', totDrops>0 ? Math.round(bestCoag)+'% — '+bestLabel : '<i>belum diamati</i>')}
+    ${kv('Percobaan direkam (jurnal)', S.trials.length+' percobaan')}
+    ${kv('Klasifikasi bukti', S.classDone.length+' / '+CARDS.length+' kartu tepat')}
+  </table>
+  <p style="font-size:.76rem; color:#4C6BAE; font-weight:700; margin-top:8px">Tahapan selesai: ${tahapStr}</p>`;
+}
+function classifHTML(){
+  if(!S.classDone.length) return `<div class="trial-empty">Belum ada kartu bukti yang diklasifikasikan di Tahap 7.</div>`;
+  const phys = CARDS.filter(c=>S.classDone.includes(c.id) && c.cat==='phys');
+  const chem = CARDS.filter(c=>S.classDone.includes(c.id) && c.cat==='chem');
+  const list = (arr,cls)=>arr.map(c=>`<span class="class-tag ${cls}">${escapeHTML(c.t)}</span>`).join('');
+  return `<div style="font-size:.85rem">
+    <b style="color:var(--royal)">Perubahan Fisika (${phys.length}):</b><br>${list(phys,'phys')||'<i style="color:#4C6BAE">tidak ada</i>'}
+    <br><br><b style="color:var(--royal)">Perubahan Kimia (${chem.length}):</b><br>${list(chem,'chem')||'<i style="color:#4C6BAE">tidak ada</i>'}
+  </div>`;
+}
+function lkpdSheetHTML(){
+  const tbl = `<table class="trial-table"><tr><th>Aspek</th><th>Sebelum</th><th>Sesudah</th></tr>${
+    ROWS.map((r,i)=>{ const s=S.tableSel[i]||{};
+      return `<tr><td>${r.label}</td><td>${s.b!==undefined?r.before[s.b]:'—'}</td><td>${s.a!==undefined?r.after[s.a]:'—'}</td></tr>`; }).join('')}</table>`;
+  return `<div class="lkpd-sheet" id="lkpdSheet">
+    <h2 style="font-size:1.15rem">LKPD — Eksperimen “Susu Menjadi Dadih”</h2>
+    <p style="font-size:.8rem;color:#4C6BAE;font-weight:700;margin-bottom:10px">Lab Maya IPA · Kelas VII · Perubahan Zat</p>
+    ${lkpdStatusHTML()}
+    ${regIdHTML()}
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px">
+      <button class="btn ghost" id="btnRefreshLKPD"><i data-lucide="refresh-cw"></i> Segarkan Data</button>
+      <button class="btn ghost" id="btnEditReg"><i data-lucide="pencil"></i> Ubah Data Peneliti</button>
+    </div>
+    <div class="lkpd-sec"><h3>A. Rumusan Masalah</h3>
+      <div class="fix">Bagaimana perubahan yang terjadi pada susu setelah dipanaskan dan ditambahkan cuka atau air jeruk?</div></div>
+    <div class="lkpd-sec"><h3>B. Hipotesis</h3><div class="ans">${S.hyp?escapeHTML(S.hyp):'<i>Belum diisi.</i>'}</div></div>
+    <div class="lkpd-sec"><h3>C. Hasil Pengamatan</h3>${tbl}</div>
+    <div class="lkpd-sec"><h3>D. Data Eksperimen</h3>
+      <span class="sync-note"><i data-lucide="refresh-cw"></i> Otomatis &amp; kumulatif dari seluruh aktivitas Lab Maya</span>
+      ${expDataHTML()}
+      <div style="margin-top:10px">${trialTableHTML()}</div></div>
+    <div class="lkpd-sec"><h3>E. Analisis Data</h3>${
+      QS.map((q,i)=>`<p style="font-size:.82rem;font-weight:700;margin:8px 0 3px">${i+1}. ${q.q}</p><div class="ans">${S.analysis[i]?escapeHTML(S.analysis[i]):'<i>Belum diisi.</i>'}</div>`).join('')}</div>
+    <div class="lkpd-sec"><h3>F. Hasil Klasifikasi Bukti</h3>
+      <span class="sync-note"><i data-lucide="refresh-cw"></i> Otomatis dari aktivitas Lab Maya</span>
+      ${classifHTML()}
+      <div style="margin-top:10px"><p style="font-size:.82rem;font-weight:700;margin:0 0 3px">Refleksimu:</p>
+        <div class="ans">${S.reflect?escapeHTML(S.reflect):'<i>Belum diisi.</i>'}</div></div></div>
+    <div class="lkpd-sec"><h3>G. Kesimpulan</h3><div class="ans" id="lkpdConclView">${S.concl?escapeHTML(S.concl):'<i>Belum diisi.</i>'}</div></div>
+  </div>`;
+}
+function openDrawer(mode, keepScroll=false){
+  const prevScroll = keepScroll ? $('#drawerBody').scrollTop : 0;
+  drawerMode = mode;
+  $('#btnPrint').style.display = mode==='lkpd' ? '' : 'none';
+  if(mode==='lkpd'){
+    $('#drawerTitle').textContent='LKPD Digital';
+    $('#drawerBody').innerHTML = lkpdSheetHTML() + `
+      <div class="lkpd-sec"><h3>Sunting Kesimpulan</h3>
+        <textarea id="conclEdit" placeholder="Perubahan di sini otomatis tersimpan & tampil pada bagian G…">${escapeHTML(S.concl||'')}</textarea></div>`;
+    $('#conclEdit').addEventListener('input',e=>{
+      S.concl=e.target.value; save();
+      const t=$('#conclText'); if(t) t.value=S.concl;
+      const v=$('#lkpdConclView'); if(v) v.textContent = S.concl ? S.concl : 'Belum diisi.';
+    });
+    $('#btnRefreshLKPD').addEventListener('click', ()=>refreshLKPD(true));
+    $('#btnEditReg').addEventListener('click', ()=>{ closeDrawer(); openReg(true); });
+  } else {
+    $('#drawerTitle').textContent='Jurnal Percobaan';
+    $('#drawerBody').innerHTML = `
+      <p class="desc" style="font-size:.88rem">Bandingkan hasil setiap variasi yang kamu coba.</p>
+      <div class="lkpd-sec"><h3>Riwayat Percobaan</h3>${trialTableHTML()}</div>
+      <div class="lkpd-sec"><h3>Pertanyaan Investigatif</h3>
+        <div class="fix" style="margin-bottom:8px">“Bagaimana pengaruh jumlah bahan asam terhadap terbentuknya gumpalan pada susu?”</div>
+        <textarea id="invText" placeholder="Berdasarkan jurnal di atas, tulis pola yang kamu temukan…">${escapeHTML(S.reflect2||'')}</textarea></div>`;
+    $('#invText').addEventListener('input',e=>{ S.reflect2=e.target.value; save(); });
+  }
+  if(window.lucide) lucide.createIcons();
+  document.body.classList.add('drawer-open');
+  if(keepScroll) $('#drawerBody').scrollTop = prevScroll;
+  lkpdSignature = lkpdSig();
+}
+function closeDrawer(){ drawerMode=null; document.body.classList.remove('drawer-open'); }
+ $('#openLKPD').addEventListener('click',()=>openDrawer('lkpd'));
+ $('#openJournal').addEventListener('click',()=>openDrawer('journal'));
+ $('#drawerClose').addEventListener('click',closeDrawer);
+ $('#drawerBackdrop').addEventListener('click',closeDrawer);
+
+/* ===================== CETAK LKPD — A4 PORTRAIT PROFESIONAL ===================== */
+function todayID(){
+  return new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
+}
+function buildPrintSheet(){
+  const id = (l,v)=>`<tr><th>${l}</th><td>${v?escapeHTML(v):'—'}</td></tr>`;
+  const kv = (l,v)=>`<tr><th>${l}</th><td>${v}</td></tr>`;
+  const ditto = `<span class="pr-empty"><i>Belum diisi.</i></span>`;
+
+  const obsTbl = `<table class="pr-table"><thead><tr>
+      <th style="width:22%">Aspek yang Diamati</th>
+      <th style="width:39%">Sebelum Perlakuan</th>
+      <th style="width:39%">Sesudah Perlakuan</th>
+    </tr></thead><tbody>${
+    ROWS.map((r,i)=>{ const s=S.tableSel[i]||{};
+      return `<tr><td><b>${r.label}</b></td><td>${s.b!==undefined?r.before[s.b]:'—'}</td><td>${s.a!==undefined?r.after[s.a]:'—'}</td></tr>`;
+    }).join('')}</tbody></table>`;
+
+  const lastAcid = S.acid || (S.trials.length ? S.trials[S.trials.length-1].acid : null);
+  const totDrops = S.trials.reduce((a,t)=>a+(+t.drops||0),0) + (S.drops||0);
+  const temps = [...S.trials.map(t=>+t.temp||0), ...(S.tempAtPour!=null?[S.tempAtPour]:[])].filter(x=>x>0);
+  const maxTemp = temps.length ? Math.max(...temps) : null;
+  const coags = [...S.trials.map(t=>(+t.coag||0)), Math.round(S.coag)];
+  const bestCoag = Math.max(...coags);
+  const bestTrial = S.trials.find(t=>(+t.coag||0)===bestCoag);
+  const bestLabel = bestTrial ? escapeHTML(bestTrial.result) : (totDrops>0 ? escapeHTML(resultLabel()) : '');
+  const expTbl = `<table class="pr-kv">
+    ${kv('Bahan asam yang digunakan', lastAcid ? escapeHTML(String(lastAcid)) : '<i>belum digunakan</i>')}
+    ${kv('Total tetes seluruh percobaan', totDrops>0 ? totDrops+' tetes' : '<i>belum ada</i>')}
+    ${kv('Suhu tertinggi saat menuang', maxTemp!=null ? '±'+maxTemp+' °C' : '<i>belum menuang</i>')}
+    ${kv('Penggumpalan terbaik', totDrops>0 ? Math.round(bestCoag)+'% — '+bestLabel : '<i>belum diamati</i>')}
+    ${kv('Klasifikasi bukti', S.classDone.length+' / '+CARDS.length+' kartu tepat')}
+    ${kv('Progres eksperimen', fmtPct(calcProgress())+' ('+countDone()+'/8 tahapan selesai)')}
+  </table>`;
+
+  const trialsTbl = S.trials.length
+    ? `<table class="pr-table"><thead><tr>
+        <th style="width:8%">No</th><th style="width:20%">Bahan</th><th style="width:16%">Tetes</th>
+        <th style="width:20%">Suhu</th><th style="width:36%">Hasil</th>
+      </tr></thead><tbody>${
+        S.trials.map(t=>`<tr><td>${t.n}</td><td>${escapeHTML(String(t.acid))}</td><td>${t.drops}</td><td>${t.temp} °C</td><td>${escapeHTML(t.result)}</td></tr>`).join('')
+      }</tbody></table>`
+    : '';
+
+  const analysis = QS.map((q,i)=>
+    `<div class="pr-q"><b>${i+1}. ${q.q}</b><div class="pr-a">${S.analysis[i]?escapeHTML(S.analysis[i]):ditto}</div></div>`).join('');
+
+  const phys = CARDS.filter(c=>S.classDone.includes(c.id) && c.cat==='phys');
+  const chem = CARDS.filter(c=>S.classDone.includes(c.id) && c.cat==='chem');
+  const tag = c=>`<span class="pr-tag ${c.cat}">${escapeHTML(c.t)}</span>`;
+  const classif =
+    (phys.length?`<b>Perubahan Fisika (${phys.length}):</b><br>`+phys.map(tag).join('')+'<br><br>':'')+
+    (chem.length?`<b>Perubahan Kimia (${chem.length}):</b><br>`+chem.map(tag).join(''):'')+
+    (!phys.length&&!chem.length?`<span class="pr-empty"><i>Belum ada kartu yang diklasifikasikan.</i></span>`:'');
+
+  return `
+    <p class="pr-title">LKPD — Eksperimen “Susu Menjadi Dadih”</p>
+    <p class="pr-sub">Lab Maya IPA · Kelas VII · Materi: Zat dan Perubahannya (Perubahan Fisika &amp; Kimia)</p>
+    <hr class="pr-rule">
+    <table class="pr-id">
+      ${id('Nama', S.name)}
+      ${id('Kelas', S.cls)}
+      ${id('Sekolah', S.school)}
+      ${id('Nama Guru', S.teacher)}
+      ${id('Nama Kelompok', S.group)}
+    </table>
+    <div class="pr-sec"><h3>A. Rumusan Masalah</h3>
+      <div class="pr-fix">Bagaimana perubahan yang terjadi pada susu setelah dipanaskan dan ditambahkan cuka atau air jeruk?</div></div>
+    <div class="pr-sec"><h3>B. Hipotesis</h3>
+      <div class="pr-ans">${S.hyp?escapeHTML(S.hyp):ditto}</div></div>
+    <div class="pr-sec"><h3>C. Hasil Pengamatan</h3>${obsTbl}</div>
+    <div class="pr-sec"><h3>D. Data Eksperimen (tersinkron otomatis dari Lab Maya)</h3>${expTbl}
+      ${trialsTbl?`<p style="font-size:9.5pt; color:#1E3A8A; font-weight:700; margin:7pt 0 3pt">Riwayat Percobaan (Jurnal):</p>${trialsTbl}`:''}</div>
+    <div class="pr-sec pr-flow"><h3>E. Analisis Data</h3>${analysis}</div>
+    <div class="pr-sec"><h3>F. Hasil Klasifikasi Bukti (otomatis)</h3>
+      <div class="pr-tags">${classif}</div>
+      <p style="font-size:10pt; margin:5pt 0 2.5pt"><b>Refleksi:</b></p>
+      <div class="pr-ans">${S.reflect?escapeHTML(S.reflect):ditto}</div></div>
+    <div class="pr-sec"><h3>G. Kesimpulan</h3>
+      <div class="pr-ans">${S.concl?escapeHTML(S.concl):ditto}</div></div>
+    <p class="pr-foot">Dicetak pada ${todayID()} · Lab Maya IPA — Eksperimen “Susu Menjadi Dadih” · Prediksi → Eksperimen → Observasi → LKPD → Analisis → Kesimpulan</p>`;
+}
+const defaultTitle = document.title;
+function preparePrint(){
+  const area = document.getElementById('printArea');
+  if(area) area.innerHTML = buildPrintSheet();
+  document.title = 'LKPD - Susu Menjadi Dadih';
+}
+window.addEventListener('afterprint', ()=>{ document.title = defaultTitle; });
+window.addEventListener('beforeprint', ()=>{
+  const area = document.getElementById('printArea');
+  if(area) area.innerHTML = buildPrintSheet();
+});
+ $('#btnPrint').addEventListener('click', ()=>{
+  preparePrint();
+  setTimeout(()=>window.print(), 60);
+});
+
+/* ===================== MENU REFERENSI & PENGEMBANG ===================== */
+ $('#openRef').addEventListener('click', ()=>$('#refModal').classList.add('open'));
+ $('#btnRefClose').addEventListener('click', ()=>$('#refModal').classList.remove('open'));
+ $('#openDev').addEventListener('click', ()=>$('#devModal').classList.add('open'));
+ $('#btnDevClose').addEventListener('click', ()=>$('#devModal').classList.remove('open'));
+
+/* ---------- lensa zoom (canvas) ---------- */
+const zc = $('#zoomCanvas'); const zctx = zc.getContext('2d');
+let zParticles=[], zClusters=[]; const zDpr=Math.min(window.devicePixelRatio||1,2);
+function initZoom(){
+  const size=340; zc.width=size*zDpr; zc.height=size*zDpr; zc.style.width=size+'px';
+  zctx.setTransform(zDpr,0,0,zDpr,0,0);
+  zClusters = Array.from({length:9},()=>({x:60+Math.random()*220, y:60+Math.random()*220, m:0}));
+  zParticles = Array.from({length:80},()=>({x:20+Math.random()*300, y:20+Math.random()*300,
+    a:Math.random()*Math.PI*2, cl:null, oa:Math.random()*Math.PI*2, or:0}));
+}
+function drawZoom(){
+  if(!zoomOpen) return;
+  const g=zctx, size=340, sep=sepLevel();
+  g.clearRect(0,0,size,size);
+  g.fillStyle='#FBF6E7'; g.fillRect(0,0,size,size);
+  if(sep>0.02){ g.fillStyle=`rgba(238,215,160,${(sep*0.55).toFixed(2)})`; g.fillRect(0,0,size,size); }
+  const coag=S.coag/100;
+  for(const p of zParticles){
+    if(!p.cl){
+      p.x+=Math.cos(p.a)*0.7; p.y+=Math.sin(p.a)*0.7; p.a+=(Math.random()-0.5)*0.4;
+      if(p.x<12||p.x>size-12||p.y<12||p.y>size-12){ p.a+=Math.PI; p.x=clamp(p.x,12,size-12); p.y=clamp(p.y,12,size-12); }
+      if(Math.random() < coag*0.02){
+        let best=null,bd=1e9;
+        for(const c of zClusters){ const d=(p.x-c.x)**2+(p.y-c.y)**2; if(d<bd){bd=d;best=c;} }
+        p.cl=best; p.or=6+best.m*0.9; best.m++;
+      }
+    } else {
+      p.oa+=0.02;
+      p.x=p.cl.x+Math.cos(p.oa)*p.or; p.y=p.cl.y+Math.sin(p.oa)*p.or;
+    }
+  }
+  for(const c of zClusters){
+    if(c.m<2) continue;
+    const r=Math.min(34, 10+c.m*1.15);
+    g.beginPath(); g.arc(c.x,c.y,r,0,7);
+    g.fillStyle='#FFFDF6'; g.fill();
+    g.lineWidth=2; g.strokeStyle='#E4D8B8'; g.stroke();
+  }
+  for(const p of zParticles){
+    g.beginPath(); g.arc(p.x,p.y,p.cl?2.6:3.2,0,7);
+    g.fillStyle='#fff'; g.fill();
+    g.lineWidth=1.2; g.strokeStyle='rgba(214,199,160,.9)'; g.stroke();
+  }
+  const pct=Math.round(S.coag);
+  $('#zoomPct').textContent=pct+'%';
+  $('#zoomPhase').textContent =
+    pct<15 ? 'Molekul protein susu (kasein) masih terdispersi merata — susu terlihat homogen.' :
+    pct<45 ? 'Asam membuat kasein mulai saling menempel — muncul gumpalan halus.' :
+    pct<80 ? 'Gumpalan membesar (koagulasi) — dadih mulai terbentuk.' :
+    'Dadih (gumpalan kasein) terpisah dari cairan whey yang bening kekuningan.';
+  requestAnimationFrame(drawZoom);
+}
+ $('#btnZoom').addEventListener('click', openZoom);
+ $('#btnZoom2').addEventListener('click', openZoom);
+function openZoom(){
+  if(!S.observed){ toast('Amati kondisi awal dulu di Tahap 1!','warn'); return; }
+  zoomOpen=true; initZoom(); $('#zoomModal').classList.add('open'); requestAnimationFrame(drawZoom);
+}
+ $('#btnZoomClose').addEventListener('click', ()=>{ zoomOpen=false; $('#zoomModal').classList.remove('open'); });
+
+/* ---------- reset / akhiri ---------- */
+ $('#btnReset').addEventListener('click', ()=>$('#confirmModal').classList.add('open'));
+ $('#btnConfirmNo').addEventListener('click', ()=>$('#confirmModal').classList.remove('open'));
+ $('#btnConfirmYes').addEventListener('click', ()=>{
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  location.reload();
+});
+
+/* ---------- penutupan modal: klik latar dan Esc ---------- */
+ $$('.modal-backdrop.dismissible').forEach(bd=>{
+  bd.addEventListener('click', e=>{ if(e.target===bd) bd.classList.remove('open'); });
+});
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    $$('.modal-backdrop.open').forEach(m=>m.classList.remove('open'));
+    const pop = document.getElementById('sndPop'); if(pop) pop.classList.add('hidden');
+    if(document.body.classList.contains('drawer-open')) closeDrawer();
+    zoomOpen=false;
+  }
+});
+
+/* ---------- inisialisasi ---------- */
+load();
+S.step = clamp(Math.round(+S.step)||1, 1, 8);
+if(!S.reached[S.step]) S.step = Math.max(...Object.keys(S.reached).map(Number));
+
+ $('#hypText').value=S.hyp; $('#hypCount').textContent=S.hyp.trim().length+' karakter';
+ $('#conclText').value=S.concl; $('#reflectText').value=S.reflect;
+if(S.acid){ $$('.acid-btn').forEach(b=>b.classList.toggle('sel',b.dataset.acid===S.acid));
+  $('#pipetLiquid').setAttribute('fill', S.acid==='cuka'?'#F1EFD8':'#F4E27A'); }
+if(S.observed){ $('#btnObserved').disabled=true;
+  $('#btnObserved').innerHTML='<i data-lucide="check-circle-2"></i> Selesai diamati';
+  $('#hypWrap').classList.remove('hidden'); $('#obsCard').classList.remove('hidden'); }
+
+renderTable(); renderAnalysis(); renderCards(); renderStepper(); updateDockLocks();
+
+const tblDone = ROWS.every((_,i)=>S.rowDone[i]);
+ $('#btnTo6').disabled = !tblDone;
+if(tblDone) $$('#tableWrap .chip').forEach(c=>c.disabled=true);
+
+if(S.step===1 && !S.observed) $('#beakerPulse').classList.add('on');
+ $$('.step-card').forEach(c=>c.classList.remove('active'));
+ $('#step'+S.step).classList.add('active');
+updateIdChip();
+lastSeenCount = countDone();
+updateLabProgress();
+applySound();
+
+if(window.lucide) lucide.createIcons();
+runLoader();
+</script>
+</body>
+</html>
