@@ -80,7 +80,11 @@ input,textarea{font-family:inherit; color:var(--ink)}
 #loaderMsg{color:var(--ink-soft); font-weight:700; text-align:right; flex:1}
 
 /* ---------- kerangka ---------- */
-.app{max-width:1280px; margin:0 auto; padding:14px 16px 40px}
+.app{max-width:1280px; margin:0 auto; padding:14px 16px 40px;
+  visibility:hidden; opacity:0; pointer-events:none;
+  transition:opacity .35s ease, visibility 0s linear .35s}
+.app.lab-open{visibility:visible; opacity:1; pointer-events:auto;
+  transition:opacity .35s ease, visibility 0s linear 0s}
 .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
   background:rgba(255,255,255,.86); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   border:1.5px solid var(--line); border-radius:22px; padding:12px 16px;
@@ -1729,6 +1733,11 @@ function showHomeView(id){
   window.scrollTo({top:0, behavior:'auto'});
 }
 function showHome(){
+  // Pastikan halaman utama menjadi satu-satunya layar yang tampil
+  // setelah loading selesai. Laboratorium tetap tersembunyi sampai
+  // pengguna menyelesaikan registrasi.
+  const app = document.querySelector('.app');
+  if(app) app.classList.remove('lab-open');
   showHomeView('viewMenu');
   document.body.classList.add('home-open');
   $('#home').classList.remove('hidden');
@@ -1736,6 +1745,8 @@ function showHome(){
 function hideHome(){
   $('#home').classList.add('hidden');
   document.body.classList.remove('home-open');
+  const app = document.querySelector('.app');
+  if(app) app.classList.add('lab-open');
 }
 function isRegistered(){ return !!(S.name && S.cls && S.school && S.teacher); }
 
@@ -2617,6 +2628,10 @@ document.addEventListener('keydown', e=>{
 });
 
 /* ---------- inisialisasi ---------- */
+// State awal: Loading → Halaman Utama → Registrasi → Laboratorium.
+// Jangan pernah membuka laboratorium secara otomatis saat halaman dimuat.
+const initialApp = document.querySelector('.app');
+if(initialApp) initialApp.classList.remove('lab-open');
 load();
 S.step = clamp(Math.round(+S.step)||1, 1, 8);
 if(!S.reached[S.step]) S.step = Math.max(...Object.keys(S.reached).map(Number));
