@@ -1634,7 +1634,7 @@ body.drawer-open .drawer{transform:none}
 <script>
 /* =========================================================
    LAB MAYA — Eksperimen Susu Menjadi Dadih (IPA Kelas VII)
-   FILE FINAL v1.6: History tersembunyi dari Menu Utama + Logout (logo-1..logo-4.jpg) di
+   FILE FINAL v1.7: Data Eksperimen Otomatis Cuka + Air Jeruk (logo-1..logo-4.jpg) di
    atas kotak menu pada Halaman Utama, tinggi 46px (menyesuai-
    kan ukuran ikon Lab Maya). Lainnya tidak diubah.
    ========================================================= */
@@ -1708,7 +1708,7 @@ const S = {
   step:1, reached:{1:true},
   observed:false, hyp:'', hypLocked:false,
   heaterEverOn:false,
-  acid:null, drops:0, tempAtPour:null,
+  acid:null, acidUsage:{cuka:0, jeruk:0}, drops:0, tempAtPour:null,
   coag:0, stir:0, stirring:false,
   dropsEver:false, adukEver:false,
   trials:[], reflect:'', reflect2:'',
@@ -1858,7 +1858,7 @@ function save(){
   try{ localStorage.setItem(KEY, JSON.stringify({
     step:S.step, reached:S.reached,
     observed:S.observed, hyp:S.hyp, hypLocked:S.hypLocked, heaterEverOn:S.heaterEverOn,
-    acid:S.acid, drops:S.drops, trials:S.trials, reflect:S.reflect, reflect2:S.reflect2,
+    acid:S.acid, acidUsage:S.acidUsage, drops:S.drops, trials:S.trials, reflect:S.reflect, reflect2:S.reflect2,
     coag:S.coag, stir:S.stir, dropsEver:S.dropsEver, adukEver:S.adukEver,
     tableSel:S.tableSel, rowDone:S.rowDone,
     analysis:S.analysis, hintLv:S.hintLv, classDone:S.classDone,
@@ -1876,6 +1876,18 @@ function load(){
     S.stir = clamp(+S.stir||0, 0, 100);
     S.drops = clamp(+S.drops||0, 0, 999);
     if(!Array.isArray(S.trials)) S.trials = [];
+    if(!S.acidUsage || typeof S.acidUsage !== 'object'){
+      S.acidUsage = {cuka:0, jeruk:0};
+      S.trials.forEach(t=>{
+        const a = String(t.acid||'').toLowerCase();
+        if(a==='cuka' || a==='jeruk') S.acidUsage[a] += (+t.drops||0);
+      });
+      if(S.drops>0 && (S.acid==='cuka' || S.acid==='jeruk')){
+        S.acidUsage[S.acid] += (+S.drops||0);
+      }
+    }
+    S.acidUsage.cuka = Math.max(0, +S.acidUsage.cuka||0);
+    S.acidUsage.jeruk = Math.max(0, +S.acidUsage.jeruk||0);
     if(typeof S.rowDone !== 'object' || S.rowDone === null) S.rowDone = {};
     if(typeof S.tableSel !== 'object' || S.tableSel === null) S.tableSel = {};
     if(typeof S.analysis !== 'object' || S.analysis === null) S.analysis = {};
@@ -2411,6 +2423,7 @@ function setAcid(a){
     let i=0;
     const iv = setInterval(()=>{
       makeDrop(); S.drops++;
+      if(S.acid==='cuka' || S.acid==='jeruk') S.acidUsage[S.acid] = (+S.acidUsage[S.acid]||0) + 1;
       if(++i>=n){
         clearInterval(iv);
         setTimeout(()=>{
@@ -2856,8 +2869,14 @@ function lkpdStatusHTML(){
 }
 function expDataHTML(){
   const kv = (l,v)=>`<tr><th>${l}</th><td>${v}</td></tr>`;
-  const lastAcid = S.acid || (S.trials.length ? S.trials[S.trials.length-1].acid : null);
-  const totDrops = S.trials.reduce((a,t)=>a+(+t.drops||0),0) + (S.drops||0);
+  const acidUsage = S.acidUsage || {cuka:0, jeruk:0};
+  const cukaDrops = Math.max(0,+acidUsage.cuka||0);
+  const jerukDrops = Math.max(0,+acidUsage.jeruk||0);
+  const used = [];
+  if(cukaDrops>0) used.push(`Cuka (${cukaDrops} tetes)`);
+  if(jerukDrops>0) used.push(`Air Jeruk (${jerukDrops} tetes)`);
+  const acidText = used.length ? used.join(' dan ') : '<i>belum digunakan</i>';
+  const totDrops = cukaDrops + jerukDrops;
   const temps = [...S.trials.map(t=>+t.temp||0), ...(S.tempAtPour!=null?[S.tempAtPour]:[])].filter(x=>x>0);
   const maxTemp = temps.length ? Math.max(...temps) : null;
   const coags = [...S.trials.map(t=>(+t.coag||0)), Math.round(S.coag)];
@@ -2866,7 +2885,9 @@ function expDataHTML(){
   const bestLabel = bestTrial ? escapeHTML(bestTrial.result) : (totDrops>0 ? escapeHTML(resultLabel()) : '');
   const tahapStr = STEPS.map((t,i)=>stageDone(i+1) ? `${i+1}. ${t} ✓` : `${i+1}. ${t}`).join(' · ');
   return `<table class="trial-table">
-    ${kv('Bahan asam yang digunakan', lastAcid ? escapeHTML(String(lastAcid)) : '<i>belum digunakan</i>')}
+    ${kv('Bahan asam yang digunakan', acidText)}
+    ${kv('Cuka', cukaDrops>0 ? cukaDrops+' tetes' : '<i>tidak digunakan</i>')}
+    ${kv('Air Jeruk', jerukDrops>0 ? jerukDrops+' tetes' : '<i>tidak digunakan</i>')}
     ${kv('Total tetes seluruh percobaan', totDrops>0 ? totDrops+' tetes' : '<i>belum ada</i>')}
     ${kv('Tetes dalam beker saat ini', S.drops>0 ? S.drops+' tetes' : '0 — beker kosong / baru')}
     ${kv('Suhu tertinggi saat menuang', maxTemp!=null ? '±'+maxTemp+' °C' : '<i>belum menuang</i>')}
@@ -2874,7 +2895,8 @@ function expDataHTML(){
     ${kv('Percobaan direkam (jurnal)', S.trials.length+' percobaan')}
     ${kv('Klasifikasi bukti', S.classDone.length+' / '+CARDS.length+' kartu tepat')}
   </table>
-  <p style="font-size:.76rem; color:#4C6BAE; font-weight:700; margin-top:8px">Tahapan selesai: ${tahapStr}</p>`;
+  <p style="font-size:.76rem; color:#4C6BAE; font-weight:700; margin-top:8px">Data bahan asam diperbarui otomatis setiap tetes benar-benar masuk ke susu.</p>
+  <p style="font-size:.76rem; color:#4C6BAE; font-weight:700; margin-top:4px">Tahapan selesai: ${tahapStr}</p>`;
 }
 function classifHTML(){
   if(!S.classDone.length) return `<div class="trial-empty">Belum ada kartu bukti yang diklasifikasikan di Tahap 7.</div>`;
@@ -2972,8 +2994,11 @@ function buildPrintSheet(){
       return `<tr><td><b>${r.label}</b></td><td>${s.b!==undefined?r.before[s.b]:'—'}</td><td>${s.a!==undefined?r.after[s.a]:'—'}</td></tr>`;
     }).join('')}</tbody></table>`;
 
-  const lastAcid = S.acid || (S.trials.length ? S.trials[S.trials.length-1].acid : null);
-  const totDrops = S.trials.reduce((a,t)=>a+(+t.drops||0),0) + (S.drops||0);
+  const acidUsage = S.acidUsage || {cuka:0, jeruk:0};
+  const cukaDrops = Math.max(0,+acidUsage.cuka||0);
+  const jerukDrops = Math.max(0,+acidUsage.jeruk||0);
+  const acidText = [cukaDrops>0?`Cuka (${cukaDrops} tetes)`:null, jerukDrops>0?`Air Jeruk (${jerukDrops} tetes)`:null].filter(Boolean).join(' dan ') || '<i>belum digunakan</i>';
+  const totDrops = cukaDrops + jerukDrops;
   const temps = [...S.trials.map(t=>+t.temp||0), ...(S.tempAtPour!=null?[S.tempAtPour]:[])].filter(x=>x>0);
   const maxTemp = temps.length ? Math.max(...temps) : null;
   const coags = [...S.trials.map(t=>(+t.coag||0)), Math.round(S.coag)];
@@ -2981,7 +3006,9 @@ function buildPrintSheet(){
   const bestTrial = S.trials.find(t=>(+t.coag||0)===bestCoag);
   const bestLabel = bestTrial ? escapeHTML(bestTrial.result) : (totDrops>0 ? escapeHTML(resultLabel()) : '');
   const expTbl = `<table class="pr-kv">
-    ${kv('Bahan asam yang digunakan', lastAcid ? escapeHTML(String(lastAcid)) : '<i>belum digunakan</i>')}
+    ${kv('Bahan asam yang digunakan', acidText)}
+    ${kv('Cuka', cukaDrops>0 ? cukaDrops+' tetes' : '<i>tidak digunakan</i>')}
+    ${kv('Air Jeruk', jerukDrops>0 ? jerukDrops+' tetes' : '<i>tidak digunakan</i>')}
     ${kv('Total tetes seluruh percobaan', totDrops>0 ? totDrops+' tetes' : '<i>belum ada</i>')}
     ${kv('Suhu tertinggi saat menuang', maxTemp!=null ? '±'+maxTemp+' °C' : '<i>belum menuang</i>')}
     ${kv('Penggumpalan terbaik', totDrops>0 ? Math.round(bestCoag)+'% — '+bestLabel : '<i>belum diamati</i>')}
