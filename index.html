@@ -874,13 +874,6 @@ body.drawer-open .drawer{transform:none}
           <h3>Masuk ke Laboratorium</h3>
           <p>Registrasi peneliti, lalu mulai eksperimen.</p>
         </button>
-
-        <button class="menu-card" id="menuHistory" type="button">
-          <span class="mc-icon"><i data-lucide="history"></i></span>
-          <i data-lucide="chevron-right" class="mc-arrow"></i>
-          <h3>History Penggunaan</h3>
-          <p>Lihat riwayat penggunaan, progres, dan hasil eksperimen yang tersimpan.</p>
-        </button>
       </nav>
 
       <div class="home-flow flow" aria-hidden="true">
@@ -1116,8 +1109,8 @@ body.drawer-open .drawer{transform:none}
 <div id="logoutWrap" style="position:relative;display:inline-flex;align-items:center;margin-left:8px;">
   <button id="btnLogout" type="button" class="btn">Logout</button>
   <div id="logoutMenu" class="logout-menu hidden">
-    <button id="btnLogoutSave" type="button">Keluar dan simpan riwayat</button>
-    <button id="btnLogoutClear" type="button" class="danger">Keluar dan hapus riwayat</button>
+    <button id="btnLogoutSave" type="button">Keluar dan tetap simpan history</button>
+    <button id="btnLogoutClear" type="button" class="danger">Keluar dan hapus history</button>
   </div>
 </div>
 
@@ -1641,7 +1634,7 @@ body.drawer-open .drawer{transform:none}
 <script>
 /* =========================================================
    LAB MAYA — Eksperimen Susu Menjadi Dadih (IPA Kelas VII)
-   FILE FINAL v1.4: + History Penggunaan (logo-1..logo-4.jpg) di
+   FILE FINAL v1.6: History tersembunyi dari Menu Utama + Logout (logo-1..logo-4.jpg) di
    atas kotak menu pada Halaman Utama, tinggi 46px (menyesuai-
    kan ukuran ikon Lab Maya). Lainnya tidak diubah.
    ========================================================= */
@@ -1826,7 +1819,7 @@ function logoutToHome(saveHistory){
   save();
   $('#logoutMenu')?.classList.add('hidden');
   showHome();
-  toast(saveHistory ? 'Riwayat penggunaan berhasil disimpan.' : 'Keluar ke Halaman Utama.','info');
+  toast(saveHistory ? 'History penggunaan berhasil disimpan.' : 'Keluar ke Halaman Utama.','info');
 }
 function bindHistoryAndLogout(){
   $('#menuHistory')?.addEventListener('click', ()=>{
