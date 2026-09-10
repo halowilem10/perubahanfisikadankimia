@@ -177,6 +177,28 @@ input,textarea{font-family:inherit; color:var(--ink)}
   .sim-layout{grid-template-columns:1fr}
   .dock{display:grid !important; grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 }
+/* Simulasi alat laboratorium hanya sampai Tahap 4: Pengadukan. */
+.sim-layout.simulation-ended{grid-template-columns:1fr}
+.sim-layout.simulation-ended .dock{display:none !important}
+
+/* Urutan visual praktikum: Tahap 1 hanya menampilkan gelas beker berisi susu. */
+.sim-stage.stage-observe .safety-strip,
+.sim-stage.stage-observe #posterSafety,
+.sim-stage.stage-observe #clipLKPD,
+.sim-stage.stage-observe g:has(#posterSafety),
+.sim-stage.stage-observe g:has(#clipLKPD),
+.sim-stage.stage-observe g:has(#heaterLamp),
+.sim-stage.stage-observe #steam,
+.sim-stage.stage-observe #bubbles,
+.sim-stage.stage-observe #spoon,
+.sim-stage.stage-observe #dropLayer,
+.sim-stage.stage-observe #pipet,
+.sim-stage.stage-observe g:has(#lcdScene),
+.sim-stage.stage-observe #bottleVinegar,
+.sim-stage.stage-observe #lemonBtn,
+.sim-stage.stage-observe #safetyStrip{display:none !important}
+.sim-stage.stage-observe #beakerPulse{display:block !important}
+
 
 /* ---------- panggung ---------- */
 .safety-strip{display:flex; gap:10px; align-items:flex-start; background:var(--yellow-soft); border:2px solid var(--yellow);
@@ -506,13 +528,32 @@ body.drawer-open .drawer{transform:none}
 .reg-note{font-size:.76rem; color:var(--ink-soft); font-weight:600; display:flex; align-items:center; gap:6px}
 .reg-note svg{width:14px;height:14px;flex:none;color:var(--bright)}
 
-#toasts{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:600; display:flex; flex-direction:column; gap:8px; width:min(420px,calc(100vw - 28px))}
+#toasts{
+  position:fixed;
+  top:18px;
+  right:18px;
+  left:auto;
+  bottom:auto;
+  transform:none;
+  z-index:10000;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:8px;
+  width:min(420px,calc(100vw - 28px));
+  pointer-events:none;
+}
+.toast{
+  pointer-events:auto;
+  width:100%;
+  box-sizing:border-box;
+}
 .toast{background:var(--royal); color:#fff; border-radius:12px; padding:10px 14px; font-size:.85rem; font-weight:600;
   box-shadow:0 10px 26px rgba(30,58,138,.4); animation:pop .25s ease; border:1.5px solid rgba(255,255,255,.15)}
 .toast.warn{background:#8A5A00} .toast.ok{background:#146B48}
-@media (max-width:640px){ #toasts{bottom:76px} }
+@media (max-width:640px){ #toasts{top:12px;right:12px;width:calc(100vw - 24px)} }
 
-@keyframes pop{from{opacity:0; transform:translateY(6px) scale(.97)} to{opacity:1}}
+@keyframes pop{from{opacity:0; transform:translateY(-6px) scale(.97)} to{opacity:1; transform:translateY(0) scale(1)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
 @keyframes rise{from{transform:translateY(0); opacity:.9} to{transform:translateY(-110vh); opacity:0}}
 @keyframes steamUp{0%{transform:translateY(6px); opacity:0} 35%{opacity:.75} 100%{transform:translateY(-16px); opacity:0}}
@@ -595,6 +636,169 @@ body.drawer-open .drawer{transform:none}
   .pr-foot{ margin-top:10pt; padding-top:5pt; border-top:1px dashed #999; font-size:8.5pt; color:#666; text-align:center;
     break-inside:avoid; page-break-inside:avoid }
 }
+
+/* FINAL FLOW FIX: meja/simulasi tidak tampil pada tahap Catat Hasil */
+.results-stage .sim-layout,
+.results-stage .lab-scene,
+.results-stage .lab-bench,
+.results-stage .bench,
+.results-stage .workspace,
+.results-stage .simulation-area,
+.results-stage .sim-area,
+.results-stage #labScene,
+.results-stage #simLayout,
+.results-stage #dock,
+.results-stage .dock {
+  display: none !important;
+}
+.results-stage .stage-content,
+.results-stage .step-content,
+.results-stage .results-content {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+
+/* FINAL UX/FLOW FIX v8 — revised for Step 1 beaker observation */
+.stage-clean .dock,
+.stage-clean #dock,
+.stage-clean .tools-dock,
+.stage-clean #heater,
+.stage-clean .heater,
+.stage-clean .heating,
+.stage-clean .hotplate,
+.stage-clean .burner,
+.stage-clean #acid,
+.stage-clean .acid,
+.stage-clean .pipet,
+.stage-clean .dropper,
+.stage-clean .vinegar,
+.stage-clean .lemon,
+.stage-clean #spoon,
+.stage-clean .spoon,
+.stage-clean .stirrer,
+.stage-clean .stir-tool,
+.stage-clean #stirrer,
+.stage-clean #dropLayer,
+.stage-clean #steam,
+.stage-clean #bubbles,
+.stage-clean #curds {
+  display:none !important;
+}
+/* Keep the practical table/scene and the beaker visible in Step 1. */
+.stage-clean .sim-layout,
+.stage-clean .sim-stage,
+.stage-clean .scene-card,
+.stage-clean #scene,
+.stage-clean #beakerHit,
+.stage-clean #beakerPulse {
+  display:block !important;
+}
+.stage-clean .sim-layout {
+  grid-template-columns:1fr !important;
+}
+.stage-clean .step-panel,
+.stage-clean .step-content,
+.stage-clean .stage-content {
+  width:100% !important;
+  max-width:none !important;
+}
+.history-summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:14px 0;
+}
+.history-stat{
+  background:#f6f9fd;
+  border:1px solid #dbe5f2;
+  border-radius:12px;
+  padding:12px;
+  text-align:center;
+}
+.history-stat b{display:block;font-size:1.15rem;color:var(--royal)}
+.history-stat span{font-size:.72rem;color:var(--ink-soft);font-weight:800}
+.history-list{display:grid;gap:10px;margin-top:10px}
+.history-empty{
+  text-align:center;
+  padding:28px 16px;
+  border:1px dashed #cbd8e8;
+  border-radius:14px;
+  color:var(--ink-soft);
+  background:#fbfdff;
+}
+.history-item{
+  border:1px solid #dbe5f2;
+  border-radius:14px;
+  padding:13px 14px;
+  background:#fff;
+}
+.history-item-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+.history-item-title{font-weight:900;color:var(--ink)}
+.history-item-date{font-size:.72rem;color:var(--ink-soft);white-space:nowrap}
+.history-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:8px;
+}
+.history-badge{
+  font-size:.7rem;
+  font-weight:800;
+  padding:5px 8px;
+  border-radius:999px;
+  background:#eef5ff;
+  color:#315a91;
+}
+.history-progress{
+  height:7px;
+  background:#edf2f7;
+  border-radius:99px;
+  overflow:hidden;
+  margin-top:10px;
+}
+.history-progress > span{
+  display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,#2f80ed,#27ae60);
+}
+@media (max-width:680px){
+  .history-summary{grid-template-columns:1fr}
+  .history-item-head{flex-direction:column;gap:4px}
+}
+
+.logout-menu {
+  position:absolute;
+  right:16px;
+  top:56px;
+  z-index:9999;
+  min-width:280px;
+  background:#fff;
+  border:1px solid #dbe5f2;
+  border-radius:14px;
+  box-shadow:0 14px 40px rgba(24,55,92,.18);
+  padding:8px;
+}
+.logout-menu.hidden { display:none !important; }
+.logout-menu button {
+  width:100%;
+  text-align:left;
+  border:0;
+  background:transparent;
+  padding:11px 12px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.logout-menu button:hover { background:#f1f6fb; }
+.logout-menu .danger { color:#b42318; }
+
+.stage-clean #beakerHit { cursor:pointer; }
+.stage-clean #beakerHit.selected { filter: drop-shadow(0 0 7px rgba(255,207,51,.75)); }
+
 </style>
 </head>
 <body class="loading-open">
@@ -669,6 +873,13 @@ body.drawer-open .drawer{transform:none}
           <i data-lucide="chevron-right" class="mc-arrow"></i>
           <h3>Masuk ke Laboratorium</h3>
           <p>Registrasi peneliti, lalu mulai eksperimen.</p>
+        </button>
+
+        <button class="menu-card" id="menuHistory" type="button">
+          <span class="mc-icon"><i data-lucide="history"></i></span>
+          <i data-lucide="chevron-right" class="mc-arrow"></i>
+          <h3>History Penggunaan</h3>
+          <p>Lihat riwayat penggunaan, progres, dan hasil eksperimen yang tersimpan.</p>
         </button>
       </nav>
 
@@ -799,6 +1010,35 @@ body.drawer-open .drawer{transform:none}
     </div>
   </div>
 
+  <div class="home-view" id="viewHistory">
+    <div class="home-card">
+      <div class="subhead">
+        <div>
+          <p class="m-sub">Halaman Utama › History Penggunaan</p>
+          <h2><span class="mh-icon"><i data-lucide="history"></i></span> History Penggunaan</h2>
+        </div>
+        <button class="btn back" data-back type="button"><i data-lucide="arrow-left"></i> Kembali</button>
+      </div>
+
+      <div class="m-note" style="margin-top:0">
+        <i data-lucide="info"></i>
+        <span>Riwayat tersimpan di perangkat/browser ini. Data tidak dikirim ke server.</span>
+      </div>
+
+      <div id="historySummary" class="history-summary"></div>
+      <div id="historyList" class="history-list"></div>
+
+      <div class="step-actions" style="justify-content:space-between; margin-top:18px">
+        <button class="btn ghost" id="btnHistoryRefresh" type="button">
+          <i data-lucide="refresh-cw"></i> Perbarui
+        </button>
+        <button class="btn danger" id="btnHistoryClear" type="button">
+          <i data-lucide="trash-2"></i> Hapus Semua Riwayat
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="home-view" id="viewReg">
     <div class="home-card" style="max-width:640px; margin:0 auto">
       <div class="subhead">
@@ -873,6 +1113,14 @@ body.drawer-open .drawer{transform:none}
       <button class="btn ghost icon" id="btnReset" title="Hapus progres & mulai ulang"><i data-lucide="rotate-ccw"></i></button>
     </div>
   </header>
+<div id="logoutWrap" style="position:relative;display:inline-flex;align-items:center;margin-left:8px;">
+  <button id="btnLogout" type="button" class="btn">Logout</button>
+  <div id="logoutMenu" class="logout-menu hidden">
+    <button id="btnLogoutSave" type="button">Keluar dan simpan riwayat</button>
+    <button id="btnLogoutClear" type="button" class="danger">Keluar dan hapus riwayat</button>
+  </div>
+</div>
+
 
   <nav class="stepper" id="stepper" aria-label="Tahapan eksperimen"></nav>
 
@@ -927,7 +1175,7 @@ body.drawer-open .drawer{transform:none}
         <div class="step-body">
           <p class="desc">Pilih <b>satu</b> bahan asam pada panel <b>Bahan Asam</b> (klik botol di meja juga bisa), atur jumlah tetesan, lalu tekan <b>Tambahkan ke Susu</b>.</p>
           <p class="dock-note">🔎 Amati setiap beberapa tetes: apakah ada yang berubah? Kamu bisa menambahkan lagi berkali-kali.</p>
-          <div class="hintbox">💡 Ingin melihat lebih dalam? Buka <b>Zoom Pengamatan</b> di panel Pengamatan untuk melihat molekul-molekul susunya!</div>
+          <div class="hintbox">💡 Ingin melihat lebih dalam? Gunakan <b>Zoom Pengamatan</b> pada Tahap 4 setelah pengadukan untuk melihat molekul-molekul susunya!</div>
           <div class="step-actions">
             <button class="btn primary" id="btnTo4">Lanjut ke Pengadukan <i data-lucide="arrow-right"></i></button>
           </div>
@@ -947,6 +1195,9 @@ body.drawer-open .drawer{transform:none}
           </ol>
           <div class="step-actions">
             <button class="btn blue" id="btnZoom2"><i data-lucide="zoom-in"></i> Zoom Pengamatan</button>
+            <button class="btn ghost" id="btnRecordStep4" disabled>
+              <i data-lucide="save"></i> Rekam &amp; Ulangi Percobaan
+            </button>
             <button class="btn amber" id="btnTo5">Selesai Mengaduk → Catat Hasil <i data-lucide="arrow-right"></i></button>
           </div>
         </div>
@@ -1181,11 +1432,6 @@ body.drawer-open .drawer{transform:none}
           <p class="dock-note" id="stirNote">Tekan & tahan tombol — sendok akan bergerak mengaduk campuran.</p>
         </div>
 
-        <div class="dock-group" id="dockTools">
-          <div class="dock-head"><i data-lucide="microscope"></i><span>Pengamatan</span></div>
-          <button class="btn blue" id="btnZoom"><i data-lucide="zoom-in"></i> Zoom Pengamatan</button>
-          <button class="btn ghost" id="btnRecord" disabled style="background:rgba(255,255,255,.92)"><i data-lucide="save"></i> Rekam & Ulangi Percobaan</button>
-          <p class="dock-note">Rekam hasil, lalu coba variabel berbeda (suhu / jenis / jumlah tetes).</p>
         </div>
       </aside>
 
@@ -1395,7 +1641,7 @@ body.drawer-open .drawer{transform:none}
 <script>
 /* =========================================================
    LAB MAYA — Eksperimen Susu Menjadi Dadih (IPA Kelas VII)
-   FILE FINAL v1.3: + header 4 logo (logo-1..logo-4.jpg) di
+   FILE FINAL v1.4: + History Penggunaan (logo-1..logo-4.jpg) di
    atas kotak menu pada Halaman Utama, tinggi 46px (menyesuai-
    kan ukuran ikon Lab Maya). Lainnya tidak diubah.
    ========================================================= */
@@ -1480,6 +1726,7 @@ const S = {
   name:'', cls:'', school:'', teacher:'', group:'',
 };
 let temp = 27, tempTarget = 65, heaterOn = false, pouring = false;
+let observationOpened = false;
 let zoomOpen = false;
 let regIsEdit = false;
 const announced = {};
@@ -1489,6 +1736,131 @@ let drawerMode = null;
 let lkpdSignature = '';
 
 const KEY = 'lab-dadih-v1';
+const HISTORY_KEY = 'lab-dadih-history-v1';
+const HISTORY_MAX = 30;
+
+function readHistory(){
+  try{
+    const h = JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
+    return Array.isArray(h) ? h : [];
+  }catch(e){ return []; }
+}
+function writeHistory(h){
+  try{ localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0, HISTORY_MAX))); }catch(e){}
+}
+function addHistorySnapshot(reason='logout'){
+  const now = new Date();
+  const item = {
+    id: 'hist-' + Date.now() + '-' + Math.random().toString(36).slice(2,8),
+    at: now.toISOString(),
+    name: S.name || 'Peneliti',
+    cls: S.cls || '-',
+    school: S.school || '-',
+    teacher: S.teacher || '-',
+    group: S.group || '-',
+    progress: calcProgress(),
+    done: countDone(),
+    trials: Array.isArray(S.trials) ? S.trials.length : 0,
+    finished: !!S.finished,
+    step: S.step,
+    reason
+  };
+  const h = readHistory();
+  h.unshift(item);
+  writeHistory(h);
+  return item;
+}
+function clearHistory(){
+  try{ localStorage.removeItem(HISTORY_KEY); }catch(e){}
+}
+function formatHistoryDate(iso){
+  try{
+    return new Intl.DateTimeFormat('id-ID',{
+      dateStyle:'medium', timeStyle:'short'
+    }).format(new Date(iso));
+  }catch(e){ return iso; }
+}
+function renderHistory(){
+  const list = $('#historyList');
+  const summary = $('#historySummary');
+  if(!list || !summary) return;
+  const h = readHistory();
+  const completed = h.filter(x=>x.finished).length;
+  const totalTrials = h.reduce((n,x)=>n+(+x.trials||0),0);
+  summary.innerHTML = `
+    <div class="history-stat"><b>${h.length}</b><span>Riwayat tersimpan</span></div>
+    <div class="history-stat"><b>${completed}</b><span>Eksperimen selesai</span></div>
+    <div class="history-stat"><b>${totalTrials}</b><span>Percobaan tercatat</span></div>`;
+  if(!h.length){
+    list.innerHTML = `<div class="history-empty">
+      <i data-lucide="history"></i>
+      <p><b>Belum ada riwayat penggunaan.</b></p>
+      <p>Riwayat akan muncul setelah pengguna memilih <b>Keluar dan simpan riwayat</b> dari menu Logout.</p>
+    </div>`;
+  }else{
+    list.innerHTML = h.map(x=>{
+      const pct = Math.max(0, Math.min(100, +x.progress||0));
+      const status = x.finished ? 'Selesai' : `Tahap ${x.step||1}`;
+      return `<article class="history-item">
+        <div class="history-item-head">
+          <div>
+            <div class="history-item-title">${escapeHTML(x.name||'Peneliti')}</div>
+            <div style="font-size:.75rem;color:var(--ink-soft)">${escapeHTML(x.school||'-')} · Kelas ${escapeHTML(x.cls||'-')}</div>
+          </div>
+          <div class="history-item-date">${formatHistoryDate(x.at)}</div>
+        </div>
+        <div class="history-meta">
+          <span class="history-badge">${status}</span>
+          <span class="history-badge">Progres ${pct}%</span>
+          <span class="history-badge">${x.done||0}/8 tahap</span>
+          <span class="history-badge">${x.trials||0} percobaan</span>
+        </div>
+        <div class="history-progress" aria-label="Progres ${pct}%"><span style="width:${pct}%"></span></div>
+      </article>`;
+    }).join('');
+  }
+  if(window.lucide) lucide.createIcons();
+}
+function logoutToHome(saveHistory){
+  if(saveHistory) addHistorySnapshot('logout');
+  save();
+  $('#logoutMenu')?.classList.add('hidden');
+  showHome();
+  toast(saveHistory ? 'Riwayat penggunaan berhasil disimpan.' : 'Keluar ke Halaman Utama.','info');
+}
+function bindHistoryAndLogout(){
+  $('#menuHistory')?.addEventListener('click', ()=>{
+    showHome();
+    showHomeView('viewHistory');
+    renderHistory();
+  });
+  $('#btnHistoryRefresh')?.addEventListener('click', renderHistory);
+  $('#btnHistoryClear')?.addEventListener('click', ()=>{
+    if(!readHistory().length){ toast('Belum ada riwayat untuk dihapus.','warn'); return; }
+    if(confirm('Hapus semua History Penggunaan pada perangkat ini?')){
+      clearHistory();
+      renderHistory();
+      toast('Semua riwayat penggunaan telah dihapus.','info');
+    }
+  });
+  $('#btnLogout')?.addEventListener('click', ()=>{
+    $('#logoutMenu')?.classList.toggle('hidden');
+  });
+  $('#btnLogoutSave')?.addEventListener('click', ()=>logoutToHome(true));
+  $('#btnLogoutClear')?.addEventListener('click', ()=>{
+    if(confirm('Keluar dan menghapus progres serta seluruh History Penggunaan pada perangkat ini?')){
+      clearHistory();
+      try{ localStorage.removeItem(KEY); }catch(e){}
+      $('#logoutMenu')?.classList.add('hidden');
+      location.reload();
+    }
+  });
+  document.addEventListener('click', e=>{
+    const wrap = $('#logoutWrap');
+    if(wrap && !wrap.contains(e.target)) $('#logoutMenu')?.classList.add('hidden');
+  });
+}
+
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify({
     step:S.step, reached:S.reached,
@@ -1789,6 +2161,7 @@ function openReg(edit=false){
 }
  $('#menuMasuk').addEventListener('click', ()=>openReg(false));
  $('#tujuanNext').addEventListener('click', ()=>openReg(false));
+
  $('#panduanNext').addEventListener('click', ()=>openReg(false));
  $$('[data-back]').forEach(b=>b.addEventListener('click', ()=>showHomeView('viewMenu')));
  $('#btnHome').addEventListener('click', showHome);
@@ -1839,10 +2212,10 @@ function updateIdChip(){
 function unlocked(){
   const c = {
     1:true,
-    2:(S.hypLocked && S.observed) || S.reached[2],
-    3:S.heaterEverOn || S.reached[3],
-    4:S.drops>=3 || S.reached[4],
-    5:(S.drops>=1 && (S.stir>10 || S.coag>20)) || S.reached[5],
+    2:(S.hypLocked && S.observed),
+    3:S.heaterEverOn,
+    4:S.dropsEver,
+    5:S.adukEver || S.stir>10 || S.coag>20,
     6:Object.keys(S.rowDone).length===ROWS.length || S.reached[6],
     7:QS.every((_,i)=>(S.analysis[i]||'').trim().length>=8) || S.reached[7],
     8:S.classDone.length===CARDS.length || S.reached[8],
@@ -1865,25 +2238,78 @@ function renderStepper(){
   if(window.lucide) lucide.createIcons();
 }
 function gotoStep(n){
-  S.step=n; $$('.step-card').forEach(c=>c.classList.remove('active'));
-  $('#step'+n).classList.add('active');
+  const target = +n;
+  if(!Number.isInteger(target) || target<1 || target>8) return;
+
+  // HARD FLOW GATE:
+  // To enter stage N, stage N-1 must be completed.
+  if(target>1 && !stageDone(target-1)){
+    const messages = {
+      2:'Selesaikan Amati dan kunci Prediksi/Hipotesis terlebih dahulu.',
+      3:'Nyalakan pemanas terlebih dahulu pada Tahap 2.',
+      4:'Tambahkan cuka atau air jeruk terlebih dahulu pada Tahap 3.',
+      5:'Selesaikan pengadukan terlebih dahulu pada Tahap 4.',
+      6:'Lengkapi seluruh Catat Hasil terlebih dahulu.',
+      7:'Lengkapi seluruh Analisis terlebih dahulu.',
+      8:'Selesaikan seluruh Klasifikasi terlebih dahulu.'
+    };
+    toast(messages[target] || 'Selesaikan tahap sebelumnya terlebih dahulu.','warn');
+    return;
+  }
+
+  S.step=target;
+  $$('.step-card').forEach(c=>c.classList.remove('active'));
+  $('#step'+target).classList.add('active');
   renderStepper(); updateDockLocks();
+  if(typeof window.applyStageCleanVisibility === 'function') window.applyStageCleanVisibility();
   if(n===8) renderSummary();
   $('#stepPanel').scrollIntoView({behavior:'smooth', block:'start'});
   if(n===1 && !S.observed) $('#beakerPulse').classList.add('on'); else $('#beakerPulse').classList.remove('on');
+
+  // The observation sheet is opened only by clicking the beaker.
+  if(target===1){
+    $('#obsCard').classList.add('hidden');
+    $('#hypWrap').classList.add('hidden');
+    observationOpened=false;
+    $('#btnObserved').disabled=true;
+    $('#btnObserved').innerHTML='<i data-lucide="eye"></i> Selesai diamati';
+    if(window.lucide) lucide.createIcons();
+  }
   save();
 }
 
 function updateDockLocks(){
   const u = unlocked();
+
+  // Panel alat simulasi hanya tampil pada Tahap 2–4.
+  // Tahap 1 fokus observasi awal: meja hanya menampilkan gelas beker berisi susu.
+  const simLayout = document.querySelector('.sim-layout');
+  const simStage = document.querySelector('.sim-stage');
+
+  /* Tahap 1 (Amati & Prediksi): meja/simulasi alat tidak ditampilkan.
+     Tahap 2–4: simulasi praktikum ditampilkan sesuai langkah.
+     Tahap 5–8: meja dan seluruh simulasi dihilangkan; fokus ke LKPD. */
+  document.body.classList.toggle('stage-clean', S.step === 1);
+  document.body.classList.toggle('results-stage', S.step >= 5);
+
+  if(simLayout) simLayout.classList.toggle('simulation-ended', S.step > 4);
+  if(simStage){
+    simStage.classList.toggle('stage-observe', S.step === 1);
+    simStage.classList.toggle('stage-heating', S.step === 2);
+    simStage.classList.toggle('stage-acid', S.step === 3);
+    simStage.classList.toggle('stage-stir', S.step === 4);
+  }
+
   $('#dockHeater').classList.toggle('locked', !u[2]);
   $('#dockAcid').classList.toggle('locked', !u[3]);
   $('#dockStir').classList.toggle('locked', !u[4]);
   $('#dockHeater .dock-lock').classList.toggle('hidden', !!u[2]);
   $('#dockAcid  .dock-lock').classList.toggle('hidden', !!u[3]);
   $('#dockStir  .dock-lock').classList.toggle('hidden', !!u[4]);
-  $('#btnRecord').disabled = S.drops<1;
-  $('#btnZoom').disabled = !S.observed;
+
+  const canRecord = S.step===4 && S.drops>0 && (S.adukEver || S.stir>10 || S.coag>20);
+  const recordStep4 = $('#btnRecordStep4');
+  if(recordStep4) recordStep4.disabled = !canRecord;
 }
 
 /* ---------- scene ---------- */
@@ -1948,7 +2374,7 @@ function updateReadouts(){
 }
 
  $('#btnHeater').addEventListener('click', ()=>{
-  if($('#dockHeater').classList.contains('locked')){ toast('Selesaikan Tahap 1 dulu ya!','warn'); return; }
+  if(S.step !== 2 || $('#dockHeater').classList.contains('locked')){ toast('Pemanas digunakan pada Tahap 2. Selesaikan observasi dan prediksi terlebih dahulu.','warn'); return; }
   heaterOn = !heaterOn;
   $('#btnHeater').innerHTML = heaterOn
     ? '<i data-lucide="power-off"></i> Matikan Pemanas'
@@ -1967,7 +2393,7 @@ function updateReadouts(){
 });
 
 function setAcid(a){
-  if($('#dockAcid').classList.contains('locked')){ toast('Buka di Tahap 3 ya!','warn'); return; }
+  if(S.step < 3 || !S.heaterEverOn || $('#dockAcid').classList.contains('locked')){ toast('Nyalakan pemanas dan selesaikan Tahap 2 terlebih dahulu.','warn'); return; }
   S.acid = a;
   $$('.acid-btn').forEach(b=>b.classList.toggle('sel', b.dataset.acid===a));
   $('#pipetLiquid').setAttribute('fill', a==='cuka' ? '#F1EFD8' : '#F4E27A');
@@ -1980,7 +2406,7 @@ function setAcid(a){
  $('#dropCount').addEventListener('input',e=>{ $('#dropVal').textContent = e.target.value+' tetes'; });
 
  $('#btnPour').addEventListener('click', ()=>{
-  if($('#dockAcid').classList.contains('locked')){ toast('Selesaikan tahap sebelumnya dulu!','warn'); return; }
+  if(S.step < 3 || !S.heaterEverOn || $('#dockAcid').classList.contains('locked')){ toast('Selesaikan Tahap 2 dan nyalakan pemanas terlebih dahulu.','warn'); return; }
   if(!S.acid){ toast('Pilih cuka atau air jeruk dulu!','warn'); return; }
   if(pouring) return;
   const n = +$('#dropCount').value;
@@ -2017,7 +2443,7 @@ function makeDrop(){
 
 const stirBtn = $('#btnStir');
 stirBtn.addEventListener('pointerdown', e=>{
-  if($('#dockStir').classList.contains('locked')){ toast('Tersedia di Tahap 4!','warn'); return; }
+  if(S.step !== 4 || !S.dropsEver || $('#dockStir').classList.contains('locked')){ toast('Selesaikan penambahan asam pada Tahap 3 terlebih dahulu.','warn'); return; }
   S.stirring = true;
   try{ stirBtn.setPointerCapture(e.pointerId); }catch(err){}
   $('#stirNote').textContent = 'Sendok sedang mengaduk… amati gumpalannya!';
@@ -2031,28 +2457,47 @@ stirBtn.addEventListener('pointerdown', e=>{
 setInterval(()=>{ if(S.stirring){ S.stir = clamp(S.stir + 2.2, 0, 100); updateReadouts(); } }, 100);
 
  $('#beakerHit').addEventListener('click', ()=>{
-  if(S.step!==1){ if(S.step>1) gotoStep(1); return; }
-  if(!S.observed){
-    $('#obsCard').classList.remove('hidden');
-    $('#stepPanel').scrollIntoView({behavior:'smooth', block:'start'});
-    toast('Lembar pengamatan terbuka — perhatikan keempat aspeknya!');
+  if(S.step!==1){
+    toast('Gelas beker digunakan untuk membuka observasi awal pada Tahap 1.','warn');
+    return;
   }
-});
+
+  observationOpened = true;
+  $('#obsCard').classList.remove('hidden');
+  $('#hypWrap').classList.add('hidden');
+  $('#stepPanel').scrollIntoView({behavior:'smooth', block:'start'});
+
+  $('#btnObserved').disabled = false;
+  $('#btnObserved').innerHTML = '<i data-lucide="eye"></i> Selesai diamati';
+  if(window.lucide) lucide.createIcons();
+  toast('Lembar pengamatan terbuka. Amati kondisi awal, lalu klik "Selesai diamati".');
+ });
  $('#posterSafety').addEventListener('click', ()=>$('#safetyModal').classList.add('open'));
  $('#btnSafetyClose').addEventListener('click', ()=>$('#safetyModal').classList.remove('open'));
  $('#safetyStrip').addEventListener('click', ()=>$('#safetyModal').classList.add('open'));
  $('#clipLKPD').addEventListener('click', ()=>openDrawer('lkpd'));
 
  $('#btnObserved').addEventListener('click', ()=>{
-  if(S.observed) return;
-  S.observed = true; $('#beakerPulse').classList.remove('on');
+  if(S.step!==1){
+    toast('Selesaikan tahap sesuai urutan praktikum.','warn');
+    return;
+  }
+  if(!observationOpened){
+    toast('Klik gelas beker terlebih dahulu untuk membuka Lembar Pengamatan.','warn');
+    return;
+  }
+
+  S.observed = true;
+  $('#beakerPulse').classList.remove('on');
   $('#btnObserved').disabled = true;
   $('#btnObserved').innerHTML = '<i data-lucide="check-circle-2"></i> Selesai diamati';
+
+  // Hanya setelah observasi selesai, Prediksi/Hipotesis terbuka.
   $('#hypWrap').classList.remove('hidden');
   if(window.lucide) lucide.createIcons();
   save(); renderStepper();
-  toast('Bagus! Sekarang tulis prediksimu.');
-});
+  toast('Pengamatan selesai. Sekarang tulis prediksi / hipotesismu.');
+ });
  $('#hypText').addEventListener('input', e=>{
   S.hyp = e.target.value;
   $('#hypCount').textContent = S.hyp.trim().length+' karakter';
@@ -2066,11 +2511,56 @@ setInterval(()=>{ if(S.stirring){ S.stir = clamp(S.stir + 2.2, 0, 100); updateRe
 });
 
  $('#btnTo3').addEventListener('click', ()=>{
+  if(!S.heaterEverOn){
+    toast('Nyalakan pemanas terlebih dahulu untuk menyelesaikan Tahap 2.','warn');
+    return;
+  }
   $('#coldNote').classList.toggle('hidden', temp>=40);
   gotoStep(3);
 });
- $('#btnTo4').addEventListener('click', ()=>gotoStep(4));
- $('#btnTo5').addEventListener('click', ()=>gotoStep(5));
+ $('#btnTo4').addEventListener('click', ()=>{
+  if(!S.dropsEver){
+    toast('Tambahkan cuka atau air jeruk terlebih dahulu pada Tahap 3.','warn');
+    return;
+  }
+  gotoStep(4);
+});
+ $('#btnTo5').addEventListener('click', ()=>{
+  if(!(S.adukEver || S.stir>10 || S.coag>20)){
+    toast('Lakukan pengadukan terlebih dahulu sampai terlihat perubahan pada campuran.','warn');
+    return;
+  }
+  gotoStep(5);
+});
+ $('#btnRecordStep4').addEventListener('click', ()=>{
+  if(S.step!==4 || S.drops<1 || !(S.adukEver || S.stir>10 || S.coag>20)){
+    toast('Selesaikan pengadukan dan pastikan sudah ada bahan asam sebelum merekam.','warn');
+    return;
+  }
+
+  S.trials.push({
+    n:S.trials.length+1,
+    acid:S.acid||'-',
+    drops:S.drops,
+    temp:S.tempAtPour??Math.round(temp),
+    coag:Math.round(S.coag),
+    result:resultLabel()
+  });
+
+  toast('Percobaan #'+S.trials.length+' tercatat! Siap untuk percobaan berikutnya.','ok');
+
+  heaterOn=false;
+  $('#btnHeater').innerHTML='<i data-lucide="power"></i> Nyalakan Pemanas';
+  if(window.lucide) lucide.createIcons();
+
+  S.drops=0; S.coag=0; S.stir=0; S.stirring=false; S.tempAtPour=null; S.acid=null;
+  $$('.acid-btn').forEach(b=>b.classList.remove('sel'));
+  $('#pipetLiquid').setAttribute('fill','#DCE8FA');
+  $('#stirBar').style.width='0%';
+  $('#stirNote').textContent='Tekan & tahan tombol — sendok akan bergerak mengaduk campuran.';
+
+  updateScene(); updateReadouts(); updateDockLocks(); save();
+});
 
 /* ---------- tahap 5 ---------- */
 function renderTable(){
@@ -2140,7 +2630,14 @@ function refreshTableSel(){
   }
   save(); renderStepper();
 });
- $('#btnTo6').addEventListener('click', ()=>gotoStep(6));
+ $('#btnTo6').addEventListener('click', ()=>{
+  const complete = ROWS.every((_,i)=>S.rowDone[i]);
+  if(!complete){
+    toast('Periksa dan lengkapi seluruh tabel Catat Hasil terlebih dahulu.','warn');
+    return;
+  }
+  gotoStep(6);
+});
 
 /* ---------- tahap 6 ---------- */
 function renderAnalysis(){
@@ -2256,7 +2753,18 @@ function updateClassify(){
   if(all || S.reflect) $('#reflectWrap').classList.remove('hidden');
 }
  $('#reflectText').addEventListener('input',e=>{ S.reflect=e.target.value; save(); });
- $('#btnTo8').addEventListener('click', ()=>gotoStep(8));
+ $('#btnTo8').addEventListener('click', ()=>{
+  if(S.classDone.length!==CARDS.length){
+    toast('Selesaikan semua kartu klasifikasi terlebih dahulu.','warn');
+    return;
+  }
+  if(S.reflect.trim().length<8){
+    toast('Isi penjelasan bukti ilmiah terlebih dahulu sebelum lanjut.','warn');
+    $('#reflectText').focus();
+    return;
+  }
+  gotoStep(8);
+});
 
 /* ---------- tahap 8 ---------- */
 function renderSummary(){
@@ -2293,19 +2801,6 @@ function resultLabel(){
   if(S.coag<80) return 'Gumpalan banyak';
   return sep>0.6 ? 'Dadih padat, whey terpisah jelas' : 'Gumpalan banyak, belum terpisah jelas';
 }
- $('#btnRecord').addEventListener('click', ()=>{
-  if(S.drops<1){ toast('Belum ada tetesan yang ditambahkan.','warn'); return; }
-  S.trials.push({ n:S.trials.length+1, acid:S.acid||'-', drops:S.drops,
-    temp:S.tempAtPour??Math.round(temp), coag:Math.round(S.coag), result:resultLabel() });
-  toast('Percobaan #'+S.trials.length+' tercatat! Becker dikosongkan — coba variabel lain.','ok');
-  heaterOn = false;
-  $('#btnHeater').innerHTML = '<i data-lucide="power"></i> Nyalakan Pemanas';
-  if(window.lucide) lucide.createIcons();
-  S.drops=0; S.coag=0; S.stir=0; S.stirring=false; S.tempAtPour=null; temp=27;
-  $('#stirBar').style.width='0%';
-  $('#stirNote').textContent='Tekan & tahan tombol — sendok akan bergerak mengaduk campuran.';
-  updateLabProgress(); renderStepper(); updateDockLocks(); save();
-});
 function trialTableHTML(){
   if(!S.trials.length) return `<div class="trial-empty">Belum ada percobaan yang direkam. Tekan <b>“Rekam & Ulangi Percobaan”</b> di lab untuk memulai perbandingan variabel.</div>`;
   return `<table class="trial-table"><tr><th>No</th><th>Bahan</th><th>Tetes</th><th>Suhu</th><th>Hasil</th></tr>${
@@ -2622,10 +3117,10 @@ function drawZoom(){
     'Dadih (gumpalan kasein) terpisah dari cairan whey yang bening kekuningan.';
   requestAnimationFrame(drawZoom);
 }
- $('#btnZoom').addEventListener('click', openZoom);
  $('#btnZoom2').addEventListener('click', openZoom);
 function openZoom(){
   if(!S.observed){ toast('Amati kondisi awal dulu di Tahap 1!','warn'); return; }
+  if(S.step>4){ toast('Zoom Pengamatan tersedia sampai Tahap 4 (Pengadukan).','warn'); return; }
   zoomOpen=true; initZoom(); $('#zoomModal').classList.add('open'); requestAnimationFrame(drawZoom);
 }
  $('#btnZoomClose').addEventListener('click', ()=>{ zoomOpen=false; $('#zoomModal').classList.remove('open'); });
@@ -2658,17 +3153,35 @@ const initialApp = document.querySelector('.app');
 if(initialApp) initialApp.classList.remove('lab-open');
 load();
 S.step = clamp(Math.round(+S.step)||1, 1, 8);
-if(!S.reached[S.step]) S.step = Math.max(...Object.keys(S.reached).map(Number));
+// Migrasi progres lama agar tidak dapat melompati urutan praktikum.
+if(!S.observed || !S.hypLocked) S.step = 1;
+else if(!S.heaterEverOn) S.step = 2;
+else if(!S.dropsEver) S.step = 3;
+else if(!(S.adukEver || S.stir>10 || S.coag>20)) S.step = 4;
+if(!S.reached[S.step]) S.step = Math.max(1, Math.min(8, ...Object.keys(S.reached).map(Number)));
 
  $('#hypText').value=S.hyp; $('#hypCount').textContent=S.hyp.trim().length+' karakter';
  $('#conclText').value=S.concl; $('#reflectText').value=S.reflect;
 if(S.acid){ $$('.acid-btn').forEach(b=>b.classList.toggle('sel',b.dataset.acid===S.acid));
   $('#pipetLiquid').setAttribute('fill', S.acid==='cuka'?'#F1EFD8':'#F4E27A'); }
-if(S.observed){ $('#btnObserved').disabled=true;
+if(S.observed){
+  $('#btnObserved').disabled=true;
   $('#btnObserved').innerHTML='<i data-lucide="check-circle-2"></i> Selesai diamati';
-  $('#hypWrap').classList.remove('hidden'); $('#obsCard').classList.remove('hidden'); }
+
+  // Jangan tampilkan hasil observasi otomatis saat baru masuk/reload.
+  $('#obsCard').classList.add('hidden');
+  $('#hypWrap').classList.add('hidden');
+ }
 
 renderTable(); renderAnalysis(); renderCards(); renderStepper(); updateDockLocks();
+if(S.step===1){
+  observationOpened=false;
+  $('#obsCard').classList.add('hidden');
+  $('#hypWrap').classList.add('hidden');
+  $('#btnObserved').disabled=true;
+  $('#btnObserved').innerHTML='<i data-lucide="eye"></i> Selesai diamati';
+  if(window.lucide) lucide.createIcons();
+}
 
 const tblDone = ROWS.every((_,i)=>S.rowDone[i]);
  $('#btnTo6').disabled = !tblDone;
@@ -2681,9 +3194,52 @@ updateIdChip();
 lastSeenCount = countDone();
 updateLabProgress();
 applySound();
+bindHistoryAndLogout();
 
 if(window.lucide) lucide.createIcons();
 runLoader();
+
+
 </script>
+
+
+
+<script>
+/* FINAL FLOW v13 — explicit Amati -> Selesai diamati -> Prediksi */
+(function(){
+  function enforceObservationGate(){
+    try{
+      if(!window.S || S.step !== 1) return;
+      var obs=document.getElementById('obsCard');
+      var hyp=document.getElementById('hypWrap');
+      if(!obs || !hyp) return;
+      if(obs.classList.contains('hidden')) hyp.classList.add('hidden');
+    }catch(e){ console.warn('Observation gate:',e); }
+  }
+  window.enforceObservationGate=enforceObservationGate;
+  document.addEventListener('DOMContentLoaded',enforceObservationGate);
+  setInterval(enforceObservationGate,300);
+})();
+</script>
+
+
+<script>
+window.labMayaValidateFlow=function(){
+  if(!window.S) return {ok:false,reason:'state-not-ready'};
+  var checks={
+    step2: S.step<2 || (S.observed && S.hypLocked),
+    step3: S.step<3 || S.heaterEverOn,
+    step4: S.step<4 || S.dropsEver,
+    step5: S.step<5 || (S.adukEver || S.stir>10 || S.coag>20),
+    step6: S.step<6 || ROWS.every(function(_,i){return S.rowDone[i];}),
+    step7: S.step<7 || QS.every(function(_,i){return (S.analysis[i]||'').trim().length>=8;}),
+    step8: S.step<8 || S.classDone.length===CARDS.length
+  };
+  return {ok:Object.keys(checks).every(function(k){return checks[k];}),checks:checks};
+};
+</script>
+
 </body>
 </html>
+
+
