@@ -58,6 +58,24 @@ input,textarea{font-family:inherit; color:var(--ink)}
   backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   border:1.5px solid var(--line); border-radius:26px; padding:30px 26px 24px;
   box-shadow:var(--shadow), 0 0 40px rgba(255,255,255,.35)}
+.loader-logos{
+  display:flex; justify-content:center; align-items:center; flex-wrap:wrap;
+  gap:8px; margin:0 auto 18px; max-width:390px;
+}
+.loader-logo-item{
+  width:68px; height:48px; display:grid; place-items:center;
+  background:rgba(255,255,255,.96); border:1.5px solid var(--line);
+  border-radius:11px; padding:5px;
+  box-shadow:0 4px 12px rgba(30,58,138,.12);
+}
+.loader-logo-item img{
+  width:100%; height:100%; object-fit:contain; display:block;
+}
+@media(max-width:480px){
+  .loader-logo-item{width:60px;height:43px}
+  .loader-logos{gap:6px;margin-bottom:14px}
+}
+
 .loader-flask{width:94px;height:94px;margin:0 auto 16px;border-radius:28px;color:#fff;
   background:linear-gradient(180deg,#2B4CB0,var(--royal));display:grid;place-items:center;position:relative;
   box-shadow:0 14px 30px rgba(30,58,138,.35), 0 0 0 5px rgba(255,207,51,.28);
@@ -584,6 +602,12 @@ body.drawer-open .drawer{transform:none}
 <!-- ===================== 1. LOADING PAGE (0% → 100%) — background loading.jpg ===================== -->
 <div class="loader" id="loader">
   <div class="loader-card">
+    <div class="loader-logos" aria-label="Logo institusi">
+      <div class="loader-logo-item"><img src="logo-1.jpg" alt="Logo 1" onerror="this.parentElement.style.display='none'"></div>
+      <div class="loader-logo-item"><img src="logo-2.jpg" alt="Logo 2" onerror="this.parentElement.style.display='none'"></div>
+      <div class="loader-logo-item"><img src="logo-3.jpg" alt="Logo 3" onerror="this.parentElement.style.display='none'"></div>
+      <div class="loader-logo-item"><img src="logo-4.jpg" alt="Logo 4" onerror="this.parentElement.style.display='none'"></div>
+    </div>
     <div class="loader-flask">
       <i data-lucide="flask-conical"></i>
       <div class="loader-bubbles"><span></span><span></span><span></span></div>
