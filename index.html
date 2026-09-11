@@ -4,8 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <meta name="theme-color" content="#1E3A8A"/>
-<meta name="description" content="Lab Maya IPA  - Fase D - Kelas VII - SEMESTER GANJIL — Eksperimen Susu Menjadi Dadih: simulasi interaktif perubahan fisika dan kimia."/>
-<title>Lab Maya · Susu Menjadi Dadih — IPA  - Fase D - Kelas VII - SEMESTER GANJIL </title>
+<meta name="description" content="Lab Maya - Susu Menjadi Dadih — IPA - Fase D - Kelas VII - Perubahan Zat — Eksperimen Susu Menjadi Dadih: simulasi interaktif perubahan fisika dan kimia."/>
+<title>Lab Maya · Susu Menjadi Dadih — IPA - Fase D - Kelas VII - Perubahan Zat </title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -771,33 +771,27 @@ body.drawer-open .drawer{transform:none}
   .history-item-head{flex-direction:column;gap:4px}
 }
 
-.logout-menu {
-  position:absolute;
-  right:16px;
-  top:56px;
-  z-index:9999;
-  min-width:280px;
-  background:#fff;
-  border:1px solid #dbe5f2;
-  border-radius:14px;
-  box-shadow:0 14px 40px rgba(24,55,92,.18);
-  padding:8px;
-}
-.logout-menu.hidden { display:none !important; }
-.logout-menu button {
-  width:100%;
-  text-align:left;
-  border:0;
-  background:transparent;
-  padding:11px 12px;
-  border-radius:10px;
-  cursor:pointer;
-}
-.logout-menu button:hover { background:#f1f6fb; }
-.logout-menu .danger { color:#b42318; }
 
 .stage-clean #beakerHit { cursor:pointer; }
 .stage-clean #beakerHit.selected { filter: drop-shadow(0 0 7px rgba(255,207,51,.75)); }
+
+.btn.danger{background:#B42318;color:#fff;border-color:#8E1C13;box-shadow:0 4px 0 #8E1C13,0 8px 20px rgba(180,35,24,.22)}
+.btn.danger:hover{background:#8E1C13}
+
+/* ===================== REFLEKSI EMOTICON KESIMPULAN ===================== */
+.emotion-question{margin:16px 0 10px;padding:14px 16px;border:1px solid rgba(30,58,138,.14);border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(240,246,255,.96))}
+.emotion-question-title{margin:0 0 10px;font-weight:800;color:var(--royal)}
+.emotion-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.emotion-option{position:relative;border:1.5px solid #D8E1F0;border-radius:14px;background:#fff;padding:12px 8px;cursor:pointer;text-align:center;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease,background .16s ease;user-select:none}
+.emotion-option:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(30,58,138,.10)}
+.emotion-option.selected{border-color:var(--royal);background:#EEF4FF;box-shadow:0 0 0 3px rgba(30,58,138,.10)}
+.emotion-option input{position:absolute;opacity:0;pointer-events:none}
+.emotion-icon{display:block;font-size:2.15rem;line-height:1;margin-bottom:6px}
+.emotion-label{display:block;font-size:.78rem;font-weight:800;color:#334155}
+.emotion-error{display:none;margin-top:9px;font-size:.78rem;font-weight:700;color:#B42318}
+.emotion-question.invalid{border-color:#F04438;box-shadow:0 0 0 3px rgba(240,68,56,.08)}
+.emotion-question.invalid .emotion-error{display:block}
+@media (max-width:560px){.emotion-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 </style>
 </head>
@@ -817,7 +811,7 @@ body.drawer-open .drawer{transform:none}
       <div class="loader-bubbles"><span></span><span></span><span></span></div>
     </div>
     <h2>Lab Maya <span>· Susu Menjadi Dadih</span></h2>
-    <p class="loader-sub">IPA  - Fase D - Kelas VII - SEMESTER GANJIL · Perubahan Zat</p>
+    <p class="loader-sub">IPA - Fase D - Kelas VII - Perubahan Zat</p>
     <div class="loader-bar"><div id="loaderFill"></div></div>
     <div class="loader-row">
       <b id="loaderPct">0%</b>
@@ -850,7 +844,7 @@ body.drawer-open .drawer{transform:none}
         <div class="brand-icon"><i data-lucide="flask-conical"></i></div>
         <h2>Lab Maya <span>· Susu Menjadi Dadih</span></h2>
       </div>
-      <p class="home-sub">IPA  - Fase D - Kelas VII - SEMESTER GANJIL · Materi Perubahan Zat</p>
+      <p class="home-sub">IPA - Fase D - Kelas VII - Perubahan Zat</p>
       <p class="home-tag">Jadilah peneliti muda: amati, bereksperimen, dan temukan sendiri mengapa susu bisa berubah menjadi dadih!</p>
 
       <nav class="home-menu" aria-label="Menu Halaman Utama">
@@ -1088,7 +1082,7 @@ body.drawer-open .drawer{transform:none}
       <div class="brand-icon"><i data-lucide="flask-conical"></i></div>
       <div>
         <h1>Lab Maya <span>· Susu Menjadi Dadih</span></h1>
-        <p>IPA · IPA  - Fase D - Kelas VII - SEMESTER GANJIL · Perubahan Zat</p>
+        <p>IPA - Fase D - Kelas VII - Perubahan Zat</p>
       </div>
     </div>
     <div class="topbar-actions">
@@ -1106,14 +1100,6 @@ body.drawer-open .drawer{transform:none}
       <button class="btn ghost icon" id="btnReset" title="Hapus progres & mulai ulang"><i data-lucide="rotate-ccw"></i></button>
     </div>
   </header>
-<div id="logoutWrap" style="position:relative;display:inline-flex;align-items:center;margin-left:8px;">
-  <button id="btnLogout" type="button" class="btn">Logout</button>
-  <div id="logoutMenu" class="logout-menu hidden">
-    <button id="btnLogoutSave" type="button">Keluar dan tetap simpan history</button>
-    <button id="btnLogoutClear" type="button" class="danger">Keluar dan hapus history</button>
-  </div>
-</div>
-
 
   <nav class="stepper" id="stepper" aria-label="Tahapan eksperimen"></nav>
 
@@ -1251,6 +1237,33 @@ body.drawer-open .drawer{transform:none}
           <div id="flowSummary"></div>
           <p class="desc" style="font-weight:700">Sekarang tuliskan kesimpulanmu sendiri:</p>
           <textarea id="conclText" placeholder="Berdasarkan percobaan yang telah aku lakukan, ..."></textarea>
+          
+          <div class="emotion-question" id="conclusionMoodWrap">
+            <p class="emotion-question-title">Bagaimana perasaanmu setelah menyelesaikan eksperimen ini?</p>
+            <div class="emotion-options" role="radiogroup" aria-label="Perasaan setelah menyelesaikan eksperimen">
+              <label class="emotion-option" data-mood="happy">
+                <input type="radio" name="conclusionMood" value="happy">
+                <span class="emotion-icon" aria-hidden="true">😄</span>
+                <span class="emotion-label">Happy</span>
+              </label>
+              <label class="emotion-option" data-mood="smile">
+                <input type="radio" name="conclusionMood" value="smile">
+                <span class="emotion-icon" aria-hidden="true">🙂</span>
+                <span class="emotion-label">Senyum biasa</span>
+              </label>
+              <label class="emotion-option" data-mood="angry">
+                <input type="radio" name="conclusionMood" value="angry">
+                <span class="emotion-icon" aria-hidden="true">😠</span>
+                <span class="emotion-label">Angry</span>
+              </label>
+              <label class="emotion-option" data-mood="sad">
+                <input type="radio" name="conclusionMood" value="sad">
+                <span class="emotion-icon" aria-hidden="true">😢</span>
+                <span class="emotion-label">Sad</span>
+              </label>
+            </div>
+            <div class="emotion-error" id="conclusionMoodError">Pilih salah satu emoticon terlebih dahulu sebelum mengirim kesimpulan.</div>
+          </div>
           <div class="step-actions">
             <button class="btn amber" id="btnFinish"><i data-lucide="party-popper"></i> Kirim Kesimpulan</button>
           </div>
@@ -1424,14 +1437,12 @@ body.drawer-open .drawer{transform:none}
           <div class="bar"><div id="stirBar"></div></div>
           <p class="dock-note" id="stirNote">Tekan & tahan tombol — sendok akan bergerak mengaduk campuran.</p>
         </div>
-
-        </div>
       </aside>
 
     </section>
   </main>
 
-  <footer class="foot">Lab Maya IPA · Eksperimen Susu Menjadi Dadih · Pembelajaran Inkuiri — Prediksi → Eksperimen → Observasi → LKPD → Analisis → Kesimpulan</footer>
+  <footer class="foot">Lab Maya · Eksperimen Susu Menjadi Dadih · Pembelajaran Inkuiri — Prediksi → Eksperimen → Observasi → LKPD → Analisis → Kesimpulan</footer>
 </div>
 
 <!-- ===================== DRAWER ===================== -->
@@ -1506,6 +1517,7 @@ body.drawer-open .drawer{transform:none}
 
     <p class="m-sec-title">Daftar Rujukan</p>
     <ol class="ref-list">
+      <li>Inabuy, V., Sutia, C., Maryana, O. F. T., Hardanie, B. D., &amp; Lestari, S. H. (2023). <b><i>Ilmu pengetahuan alam untuk SMP/MTs kelas VII (Edisi revisi)</i></b>. Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi, Pusat Perbukuan. <a href="https://buku.kemendikdasmen.go.id/katalog/ilmu-pengetahuan-alam-untuk-smp-mts-kelas-vii-edisi-revisi" target="_blank" rel="noopener noreferrer">Katalog buku resmi</a></li>
       <li>Ulfa, M., Jayanti, A., &amp; Wulandari, W. (2021). <b>Ilmu Pengetahuan Alam untuk SMP/MTs IPA  - Fase D - Kelas VII - SEMESTER GANJIL</b>. Jakarta: Pusat Kurikulum dan Perbukuan, Kemendikbudristek.</li>
       <li>Lucey, J. A., &amp; Horne, D. S. (2009). Acid coagulation of milk. Dalam P. F. Fox &amp; P. L. H. McSweeney (Eds.), <b>Advanced Dairy Chemistry—1: Proteins</b>. New York: Springer.</li>
       <li>Walstra, P., Wouters, J. T. M., &amp; Geurts, T. J. (2006). <b>Dairy Science and Technology</b> (2nd ed.). Boca Raton: CRC Press.</li>
@@ -1559,19 +1571,19 @@ body.drawer-open .drawer{transform:none}
       <span>Canvas 2D</span><span>Web Audio</span><span>Web Storage</span><span>Lucide Icons</span>
     </div>
 
-    <p class="m-sec-title">Tim Pengembang</p>
+    <p class="m-sec-title">Pengembang</p>
     <div class="dev-people">
       <!-- ✏️ GANTI dengan identitas pengembang Anda -->
       <div class="dev-person"><i data-lucide="user-round"></i>
-        <div><b>Nama Pengembang</b><span>Guru IPA / Pengembang Media Pembelajaran</span></div></div>
+        <div><b>WILEM RILEXEN S P MULDER, S.Pd., M.Pd., Gr.</b><span>Guru IPA & Informatika</span></div></div>
       <div class="dev-person"><i data-lucide="school"></i>
-        <div><b>Nama Sekolah / Instansi</b><span>SMP — Kabupaten/Kota, Provinsi</span></div></div>
+        <div><b>Nama Sekolah / Instansi</b><span>SMP Negeri 65 Maluku Tengah — Kabupaten Maluku Tengah, Provinsi Maluku</span></div></div>
       <div class="dev-person"><i data-lucide="mail"></i>
-        <div><b>Kontak</b><span>email@contoh.sch.id</span></div></div>
+        <div><b>Kontak</b><span>mr.wilmulder@gmail.com</span></div></div>
     </div>
 
     <div class="m-note" style="margin-top:14px"><i data-lucide="heart"></i>
-      <span>Dikembangkan untuk pembelajaran IPA yang aktif, kolaboratif, dan menggembirakan. 🧪</span>
+      <span>Dikembangkan untuk pembelajaran IPA yang aktif, kolaboratif, dan menggembirakan. 🧪dengan menggunakan bantuan AI</span>
     </div>
   </div>
 </div>
@@ -1633,7 +1645,7 @@ body.drawer-open .drawer{transform:none}
 
 <script>
 /* =========================================================
-   LAB MAYA — Eksperimen Susu Menjadi Dadih (IPA IPA  - Fase D - Kelas VII - SEMESTER GANJIL)
+   LAB MAYA — Eksperimen Susu Menjadi Dadih (IPA - Fase D - Kelas VII - Perubahan Zat)
    FILE FINAL v1.7: Data Eksperimen Otomatis Cuka + Air Jeruk (logo-1..logo-4.jpg) di
    atas kotak menu pada Halaman Utama, tinggi 46px (menyesuai-
    kan ukuran ikon Lab Maya). Lainnya tidak diubah.
@@ -1644,7 +1656,7 @@ const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 const fmt1  = n => n.toFixed(1).replace('.', ',');
 function escapeHTML(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-const STEPS = ['Amati & Prediksi','Pemanaskan','Tambah Asam','Pengadukan','Catat Hasil','Analisis','Klasifikasi','Kesimpulan'];
+const STEPS = ['Amati & Prediksi','Pemanasan','Tambah Asam','Pengadukan','Catat Hasil','Analisis','Klasifikasi','Kesimpulan'];
 
 const ROWS = [
  {id:'kondisi', label:'Kondisi zat',
@@ -1715,9 +1727,11 @@ const S = {
   tableSel:{}, rowDone:{},
   analysis:{}, hintLv:{},
   classDone:[],
-  concl:'', finished:false,
+  concl:'', conclusionMood:'', finished:false,
   name:'', cls:'', school:'', teacher:'', group:'',
 };
+// Expose the state object for the optional validation API and safe cross-script checks.
+window.S = S;
 let temp = 27, tempTarget = 65, heaterOn = false, pouring = false;
 let observationOpened = false;
 let zoomOpen = false;
@@ -1730,6 +1744,14 @@ let lkpdSignature = '';
 
 const KEY = 'lab-dadih-v1';
 const HISTORY_KEY = 'lab-dadih-history-v1';
+
+/* Defensive runtime guard: keeps one unexpected UI error from breaking the whole lab. */
+window.addEventListener('error', e=>{
+  console.warn('Lab Maya runtime warning:', e.error || e.message);
+});
+window.addEventListener('unhandledrejection', e=>{
+  console.warn('Lab Maya promise warning:', e.reason);
+});
 const HISTORY_MAX = 30;
 
 function readHistory(){
@@ -1814,14 +1836,7 @@ function renderHistory(){
   }
   if(window.lucide) lucide.createIcons();
 }
-function logoutToHome(saveHistory){
-  if(saveHistory) addHistorySnapshot('logout');
-  save();
-  $('#logoutMenu')?.classList.add('hidden');
-  showHome();
-  toast(saveHistory ? 'History penggunaan berhasil disimpan.' : 'Keluar ke Halaman Utama.','info');
-}
-function bindHistoryAndLogout(){
+function bindHistoryControls(){
   $('#menuHistory')?.addEventListener('click', ()=>{
     showHome();
     showHomeView('viewHistory');
@@ -1836,22 +1851,6 @@ function bindHistoryAndLogout(){
       toast('Semua riwayat penggunaan telah dihapus.','info');
     }
   });
-  $('#btnLogout')?.addEventListener('click', ()=>{
-    $('#logoutMenu')?.classList.toggle('hidden');
-  });
-  $('#btnLogoutSave')?.addEventListener('click', ()=>logoutToHome(true));
-  $('#btnLogoutClear')?.addEventListener('click', ()=>{
-    if(confirm('Keluar dan menghapus progres serta seluruh History Penggunaan pada perangkat ini?')){
-      clearHistory();
-      try{ localStorage.removeItem(KEY); }catch(e){}
-      $('#logoutMenu')?.classList.add('hidden');
-      location.reload();
-    }
-  });
-  document.addEventListener('click', e=>{
-    const wrap = $('#logoutWrap');
-    if(wrap && !wrap.contains(e.target)) $('#logoutMenu')?.classList.add('hidden');
-  });
 }
 
 function save(){
@@ -1862,7 +1861,7 @@ function save(){
     coag:S.coag, stir:S.stir, dropsEver:S.dropsEver, adukEver:S.adukEver,
     tableSel:S.tableSel, rowDone:S.rowDone,
     analysis:S.analysis, hintLv:S.hintLv, classDone:S.classDone,
-    concl:S.concl, finished:S.finished,
+    concl:S.concl, conclusionMood:S.conclusionMood, finished:S.finished,
     name:S.name, cls:S.cls, school:S.school, teacher:S.teacher, group:S.group,
   })); }catch(e){}
 }
@@ -1892,6 +1891,7 @@ function load(){
     if(typeof S.tableSel !== 'object' || S.tableSel === null) S.tableSel = {};
     if(typeof S.analysis !== 'object' || S.analysis === null) S.analysis = {};
     if(!Array.isArray(S.classDone)) S.classDone = [];
+    if(!['happy','smile','angry','sad'].includes(S.conclusionMood)) S.conclusionMood='';
     delete S.doneStages;
   }catch(e){}
 }
@@ -2785,14 +2785,61 @@ function renderSummary(){
     <div class="lkpd-sec"><h3>5. Progres Eksperimen</h3><div class="ans"><b>${fmtPct(calcProgress())}</b> — ${countDone()} dari 8 tahapan selesai.</div></div>`;
 }
  $('#conclText').addEventListener('input',e=>{ S.concl=e.target.value; save(); });
- $('#btnFinish').addEventListener('click', ()=>{
-  if(S.concl.trim().length<20){ toast('Tuliskan kesimpulanmu dengan lebih lengkap (min. 20 karakter).','warn'); return; }
-  S.finished = true;
-  celebrate(8);
-  save(); renderStepper();
-  $('#finalSummary').textContent = `Progres Eksperimen: ${fmtPct(calcProgress())} (8/8 tahap) · Kesimpulanmu: “${S.concl.trim()}”`;
-  $('#finalModal').classList.add('open');
-});
+ 
+
+  /* ---------- refleksi emoticon pada kesimpulan ---------- */
+  const moodWrap = $('#conclusionMoodWrap');
+  const moodError = $('#conclusionMoodError');
+  const moodLabels = {
+    happy:'😄 Happy',
+    smile:'🙂 Senyum biasa',
+    angry:'😠 Angry',
+    sad:'😢 Sad'
+  };
+  function renderConclusionMood(){
+    $$('.emotion-option').forEach(opt=>{
+      const selected = opt.dataset.mood === S.conclusionMood;
+      opt.classList.toggle('selected', selected);
+      const radio = opt.querySelector('input[type="radio"]');
+      if(radio) radio.checked = selected;
+    });
+  }
+  $$('.emotion-option').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      S.conclusionMood = opt.dataset.mood;
+      if(moodWrap) moodWrap.classList.remove('invalid');
+      if(moodError) moodError.style.display='none';
+      renderConclusionMood();
+      save();
+    });
+  });
+  renderConclusionMood();
+
+  $('#btnFinish').addEventListener('click', ()=>{
+   if(S.concl.trim().length<20){
+     toast('Tuliskan kesimpulanmu dengan lebih lengkap (min. 20 karakter).','warn');
+     $('#conclText').focus();
+     return;
+   }
+   if(!S.conclusionMood){
+     if(moodWrap) moodWrap.classList.add('invalid');
+     if(moodError) moodError.style.display='block';
+     toast('Pilih emoticon perasaanmu terlebih dahulu.','warn');
+     if(moodWrap) moodWrap.scrollIntoView({behavior:'smooth', block:'center'});
+     return;
+   }
+   if(moodWrap) moodWrap.classList.remove('invalid');
+   if(moodError) moodError.style.display='none';
+
+   S.finished = true;
+   celebrate(8);
+   save(); renderStepper();
+   $('#finalSummary').textContent =
+     `Progres Eksperimen: ${fmtPct(calcProgress())} (8/8 tahap) · ` +
+     `Perasaanmu: ${moodLabels[S.conclusionMood] || S.conclusionMood} · ` +
+     `Kesimpulanmu: “${S.concl.trim()}”`;
+   $('#finalModal').classList.add('open');
+  });
  $('#btnFinalLKPD').addEventListener('click', ()=>{ $('#finalModal').classList.remove('open'); openDrawer('lkpd'); });
  $('#btnEndExp').addEventListener('click', ()=>{
   $('#finalModal').classList.remove('open');
@@ -2823,7 +2870,7 @@ function lkpdSig(){
     JSON.stringify(S.tableSel),
     S.acid||'', S.drops, Math.round(S.coag), S.tempAtPour??'',
     S.trials.length, JSON.stringify(S.trials), JSON.stringify(S.analysis),
-    S.classDone.join(','), S.reflect, S.concl,
+    S.classDone.join(','), S.reflect, S.concl, S.conclusionMood||'',
     S.dropsEver?1:0, S.adukEver?1:0,
     Object.keys(S.rowDone).length, countDone()
   ].join('|');
@@ -2914,7 +2961,7 @@ function lkpdSheetHTML(){
       return `<tr><td>${r.label}</td><td>${s.b!==undefined?r.before[s.b]:'—'}</td><td>${s.a!==undefined?r.after[s.a]:'—'}</td></tr>`; }).join('')}</table>`;
   return `<div class="lkpd-sheet" id="lkpdSheet">
     <h2 style="font-size:1.15rem">LKPD — Eksperimen “Susu Menjadi Dadih”</h2>
-    <p style="font-size:.8rem;color:#4C6BAE;font-weight:700;margin-bottom:10px">Lab Maya IPA · IPA  - Fase D - Kelas VII - SEMESTER GANJIL · Perubahan Zat</p>
+    <p style="font-size:.8rem;color:#4C6BAE;font-weight:700;margin-bottom:10px">Lab Maya IPA - Fase D - Kelas VII - Perubahan Zat</p>
     ${lkpdStatusHTML()}
     ${regIdHTML()}
     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px">
@@ -2936,7 +2983,10 @@ function lkpdSheetHTML(){
       ${classifHTML()}
       <div style="margin-top:10px"><p style="font-size:.82rem;font-weight:700;margin:0 0 3px">Refleksimu:</p>
         <div class="ans">${S.reflect?escapeHTML(S.reflect):'<i>Belum diisi.</i>'}</div></div></div>
-    <div class="lkpd-sec"><h3>G. Kesimpulan</h3><div class="ans" id="lkpdConclView">${S.concl?escapeHTML(S.concl):'<i>Belum diisi.</i>'}</div></div>
+    <div class="lkpd-sec"><h3>G. Kesimpulan</h3>
+      <div class="ans" id="lkpdConclView">${S.concl?escapeHTML(S.concl):'<i>Belum diisi.</i>'}</div>
+      ${S.conclusionMood?`<div style="margin-top:8px;font-weight:800;color:var(--royal)">Perasaan setelah eksperimen: ${escapeHTML(S.conclusionMood==='happy'?'😄 Happy':S.conclusionMood==='smile'?'🙂 Senyum biasa':S.conclusionMood==='angry'?'😠 Angry':'😢 Sad')}</div>`:''}
+    </div>
   </div>`;
 }
 function openDrawer(mode, keepScroll=false){
@@ -3038,7 +3088,7 @@ function buildPrintSheet(){
 
   return `
     <p class="pr-title">LKPD — Eksperimen “Susu Menjadi Dadih”</p>
-    <p class="pr-sub">Lab Maya IPA · IPA  - Fase D - Kelas VII - SEMESTER GANJIL · Materi: Zat dan Perubahannya (Perubahan Fisika &amp; Kimia)</p>
+    <p class="pr-sub">Lab Maya IPA · Fase D · Kelas VII · Perubahan Zat · Materi: Zat dan Perubahannya (Perubahan Fisika &amp; Kimia)</p>
     <hr class="pr-rule">
     <table class="pr-id">
       ${id('Nama', S.name)}
@@ -3060,8 +3110,9 @@ function buildPrintSheet(){
       <p style="font-size:10pt; margin:5pt 0 2.5pt"><b>Refleksi:</b></p>
       <div class="pr-ans">${S.reflect?escapeHTML(S.reflect):ditto}</div></div>
     <div class="pr-sec"><h3>G. Kesimpulan</h3>
-      <div class="pr-ans">${S.concl?escapeHTML(S.concl):ditto}</div></div>
-    <p class="pr-foot">Dicetak pada ${todayID()} · Lab Maya IPA — Eksperimen “Susu Menjadi Dadih” · Prediksi → Eksperimen → Observasi → LKPD → Analisis → Kesimpulan</p>`;
+      <div class="pr-ans">${S.concl?escapeHTML(S.concl):ditto}</div>
+      ${S.conclusionMood?`<p style="font-size:10pt;margin:5pt 0 0"><b>Perasaan setelah eksperimen:</b> ${escapeHTML(S.conclusionMood==='happy'?'😄 Happy':S.conclusionMood==='smile'?'🙂 Senyum biasa':S.conclusionMood==='angry'?'😠 Angry':'😢 Sad')}</p>`:''}</div>
+    <p class="pr-foot">Dicetak pada ${todayID()} · Lab Maya · Eksperimen “Susu Menjadi Dadih” · Prediksi → Eksperimen → Observasi → LKPD → Analisis → Kesimpulan</p>`;
 }
 const defaultTitle = document.title;
 function preparePrint(){
@@ -3214,7 +3265,7 @@ updateIdChip();
 lastSeenCount = countDone();
 updateLabProgress();
 applySound();
-bindHistoryAndLogout();
+bindHistoryControls();
 
 if(window.lucide) lucide.createIcons();
 runLoader();
