@@ -151,23 +151,26 @@ input,textarea{font-family:inherit; color:var(--ink)}
 .btn.icon{padding:9px 10px}
 .btn.big{font-size:1.02rem; padding:12px 24px}
 
-/* ---------- stepper ---------- */
-.stepper{display:flex; gap:8px; overflow-x:auto; padding:12px 2px; position:sticky; top:0; z-index:40;
-  background:rgba(240,246,255,.9); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-  scrollbar-width:none; border-bottom:1.5px solid rgba(207,224,247,.6)}
+/* ---------- stepper: scroll horizontal kiri / kanan ---------- */
+.stepper-wrap{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:6px;padding:6px 0;background:rgba(240,246,255,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1.5px solid rgba(207,224,247,.6)}
+.stepper{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth;scroll-snap-type:x proximity;flex:1;min-width:0;padding:6px 2px;scrollbar-width:none}
 .stepper::-webkit-scrollbar{display:none}
-.stepchip{flex:none; display:flex; align-items:center; gap:8px; background:#fff; border:2px solid var(--line);
-  border-radius:999px; padding:6px 12px 6px 6px; font-weight:700; font-size:.82rem; color:var(--ink-soft);
-  transition:border-color .15s, background .15s, transform .15s, box-shadow .15s}
+.stepper-nav{width:34px;height:34px;flex:none;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--royal);display:grid;place-items:center;box-shadow:0 3px 10px rgba(30,58,138,.12);transition:.15s}
+.stepper-nav:hover{background:var(--yellow);border-color:var(--yellow-deep);color:var(--royal-deep);transform:translateY(-1px)}
+.stepper-nav:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.stepper-nav svg{width:17px;height:17px}
+.stepchip{flex:none;scroll-snap-align:center;display:flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--line);
+  border-radius:999px;padding:6px 12px 6px 6px;font-weight:700;font-size:.82rem;color:var(--ink-soft);
+  transition:border-color .15s,background .15s,transform .15s,box-shadow .15s}
 .stepchip .num{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--sky1);color:var(--royal);font-family:'Fredoka';font-size:.85rem;flex:none}
 .stepchip.locked{opacity:.55}
-.stepchip.active{border-color:var(--yellow); color:var(--royal); background:var(--yellow-soft);
-  box-shadow:0 4px 14px rgba(255,207,51,.35)}
-.stepchip.active .num{background:var(--yellow); color:var(--royal-deep)}
-.stepchip.done .num{background:var(--bright); color:#fff}
+.stepchip.active{border-color:var(--yellow);color:var(--royal);background:var(--yellow-soft);box-shadow:0 4px 14px rgba(255,207,51,.35)}
+.stepchip.active .num{background:var(--yellow);color:var(--royal-deep)}
+.stepchip.done .num{background:var(--bright);color:#fff}
 .stepchip:not(.locked){cursor:pointer}
-.stepchip:not(.locked):hover{border-color:var(--bright); transform:translateY(-1px)}
+.stepchip:not(.locked):hover{border-color:var(--bright);transform:translateY(-1px)}
 .stepchip svg{width:14px;height:14px}
+@media(max-width:560px){.stepper-wrap{gap:4px}.stepper-nav{width:32px;height:32px}.stepchip{font-size:.76rem;padding-right:10px}.stepchip .num{width:24px;height:24px}}
 
 /* ---------- tata letak ---------- */
 .step-panel{margin-top:4px; scroll-margin-top:84px}
@@ -1101,7 +1104,15 @@ body.drawer-open .drawer{transform:none}
     </div>
   </header>
 
-  <nav class="stepper" id="stepper" aria-label="Tahapan eksperimen"></nav>
+  <div class="stepper-wrap" aria-label="Navigasi tahapan eksperimen">
+    <button class="stepper-nav" id="stepperPrev" type="button" aria-label="Geser tahapan ke kiri" title="Tahap sebelumnya">
+      <i data-lucide="chevron-left"></i>
+    </button>
+    <nav class="stepper" id="stepper" aria-label="Tahapan eksperimen"></nav>
+    <button class="stepper-nav" id="stepperNext" type="button" aria-label="Geser tahapan ke kanan" title="Tahap berikutnya">
+      <i data-lucide="chevron-right"></i>
+    </button>
+  </div>
 
   <main>
     <section class="step-panel" id="stepPanel">
@@ -1604,6 +1615,7 @@ body.drawer-open .drawer{transform:none}
 <!-- ===================== MODAL FINALE ===================== -->
 <div class="modal-backdrop" id="finalModal">
   <div class="modal">
+    <button class="close-x" id="btnFinalBack" type="button" aria-label="Kembali ke Kesimpulan" title="Kembali ke Kesimpulan"><i data-lucide="x"></i></button>
     <div class="final-bubbles">
       <span style="left:8%;animation-delay:0s"></span><span style="left:26%;animation-delay:1.4s;width:10px;height:10px"></span>
       <span style="left:47%;animation-delay:.7s;width:18px;height:18px"></span><span style="left:66%;animation-delay:2s"></span>
@@ -1877,7 +1889,7 @@ function save(){
     tableSel:S.tableSel, rowDone:S.rowDone,
     analysis:S.analysis, hintLv:S.hintLv, classDone:S.classDone,
     concl:S.concl, conclusionMood:S.conclusionMood, finished:S.finished,
-    name:S.name, cls:S.cls, school:S.school, teacher:S.teacher, group:S.group,
+    name:S.name, cls:S.cls, school:S.school, teacher:S.teacher, group:S.group, trialRecorded:S.trialRecorded,
   })); }catch(e){}
 }
 function load(){
@@ -2255,7 +2267,26 @@ function renderStepper(){
   $$('#stepper .stepchip').forEach(b=>b.addEventListener('click',()=>{
     const n=+b.dataset.step; if(unlocked()[n]) gotoStep(n); else toast('Selesaikan tahap sebelumnya dulu ya!','warn');
   }));
+  const activeChip = $('#stepper .stepchip.active');
+  if(activeChip) activeChip.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  updateStepperScrollButtons();
   if(window.lucide) lucide.createIcons();
+}
+function updateStepperScrollButtons(){
+  const el=$('#stepper'), prev=$('#stepperPrev'), next=$('#stepperNext');
+  if(!el || !prev || !next) return;
+  const max=Math.max(0,el.scrollWidth-el.clientWidth-2);
+  prev.disabled=el.scrollLeft<=2;
+  next.disabled=el.scrollLeft>=max;
+}
+function initStepperScroll(){
+  const el=$('#stepper'), prev=$('#stepperPrev'), next=$('#stepperNext');
+  if(!el || !prev || !next) return;
+  prev.addEventListener('click',()=>el.scrollBy({left:-Math.max(180,el.clientWidth*.65),behavior:'smooth'}));
+  next.addEventListener('click',()=>el.scrollBy({left:Math.max(180,el.clientWidth*.65),behavior:'smooth'}));
+  el.addEventListener('scroll',updateStepperScrollButtons,{passive:true});
+  window.addEventListener('resize',updateStepperScrollButtons);
+  updateStepperScrollButtons();
 }
 function gotoStep(n){
   const target = +n;
@@ -2551,36 +2582,109 @@ setInterval(()=>{ if(S.stirring){ S.stir = clamp(S.stir + 2.2, 0, 100); updateRe
     toast('Lakukan pengadukan terlebih dahulu sampai terlihat perubahan pada campuran.','warn');
     return;
   }
+
+  // Simpan otomatis data percobaan terakhir sebelum masuk ke Catat Hasil.
+  // Ini memastikan data tidak hilang walaupun pengguna tidak menekan
+  // tombol Rekam & Ulangi Percobaan.
+  if(!S.trialRecorded){
+    S.trials.push({
+      n:S.trials.length+1,
+      acid:S.acid||'-',
+      drops:S.drops,
+      temp:S.tempAtPour??Math.round(temp),
+      coag:Math.round(S.coag),
+      stir:Math.round(S.stir),
+      result:resultLabel()
+    });
+    S.trialRecorded = true;
+    save();
+    refreshLKPD(true);
+    toast('Data percobaan terakhir tersimpan otomatis.','ok');
+  } else {
+    save();
+  }
   gotoStep(5);
 });
+ function resetSimulationForRepeat(){
+  // Ulangi Percobaan = eksperimen baru, bukan sekadar mengosongkan hasil Tahap 4.
+  // Identitas peneliti, observasi awal, hipotesis, dan riwayat percobaan tetap dipertahankan;
+  // seluruh variabel eksperimen baru dimulai dari kondisi susu awal.
+  heaterOn = false;
+  pouring = false;
+  temp = 27;
+  tempTarget = 65;
+  S.step = 2;
+  S.heaterEverOn = false;
+  S.acid = null;
+  S.drops = 0;
+  S.tempAtPour = null;
+  S.coag = 0;
+  S.stir = 0;
+  S.stirring = false;
+  S.dropsEver = false;
+  S.adukEver = false;
+
+  // Tahap 1 tetap selesai, tetapi Tahap 2–8 harus kembali terkunci.
+  S.reached = {1:true, 2:true};
+  S.tableSel = {};
+  S.rowDone = {};
+  S.analysis = {};
+  S.hintLv = {};
+  S.classDone = [];
+  S.reflect = '';
+  S.reflect2 = '';
+  S.concl = '';
+  S.conclusionMood = '';
+  S.finished = false;
+  S.trialRecorded = false;
+
+  $('#tempTarget').value = 65;
+  $('#targetVal').textContent = '65 °C';
+  $('#dropCount').value = 5;
+  $('#dropVal').textContent = '5 tetes';
+  $('#btnHeater').disabled = false;
+  $('#btnHeater').innerHTML='<i data-lucide="power"></i> Nyalakan Pemanas';
+  $('#btnPour').disabled = false;
+  $$('.acid-btn').forEach(b=>b.classList.remove('sel'));
+  $('#pipetLiquid').setAttribute('fill','#DCE8FA');
+  $('#stirBar').style.width='0%';
+  $('#stirNote').textContent='Tekan & tahan tombol — sendok akan bergerak mengaduk campuran.';
+  $('#safetyStrip').classList.add('hidden');
+
+  $$('.step-card').forEach(c=>c.classList.remove('active'));
+  $('#step2').classList.add('active');
+  updateScene();
+  updateReadouts();
+  renderStepper();
+  updateDockLocks();
+  refreshLKPD();
+  save();
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(window.lucide) lucide.createIcons();
+}
+
  $('#btnRecordStep4').addEventListener('click', ()=>{
   if(S.step!==4 || S.drops<1 || !(S.adukEver || S.stir>10 || S.coag>20)){
     toast('Selesaikan pengadukan dan pastikan sudah ada bahan asam sebelum merekam.','warn');
     return;
   }
 
-  S.trials.push({
-    n:S.trials.length+1,
-    acid:S.acid||'-',
-    drops:S.drops,
-    temp:S.tempAtPour??Math.round(temp),
-    coag:Math.round(S.coag),
-    result:resultLabel()
-  });
+  if(!S.trialRecorded){
+    S.trials.push({
+      n:S.trials.length+1,
+      acid:S.acid||'-',
+      drops:S.drops,
+      temp:S.tempAtPour??Math.round(temp),
+      coag:Math.round(S.coag),
+      stir:Math.round(S.stir),
+      result:resultLabel()
+    });
+    S.trialRecorded = true;
+  }
 
-  toast('Percobaan #'+S.trials.length+' tercatat! Siap untuk percobaan berikutnya.','ok');
-
-  heaterOn=false;
-  $('#btnHeater').innerHTML='<i data-lucide="power"></i> Nyalakan Pemanas';
-  if(window.lucide) lucide.createIcons();
-
-  S.drops=0; S.coag=0; S.stir=0; S.stirring=false; S.tempAtPour=null; S.acid=null;
-  $$('.acid-btn').forEach(b=>b.classList.remove('sel'));
-  $('#pipetLiquid').setAttribute('fill','#DCE8FA');
-  $('#stirBar').style.width='0%';
-  $('#stirNote').textContent='Tekan & tahan tombol — sendok akan bergerak mengaduk campuran.';
-
-  updateScene(); updateReadouts(); updateDockLocks(); save();
+  save();
+  toast('Percobaan #'+S.trials.length+' tercatat. Simulasi akan dimulai kembali dari Tahap 2 dengan kondisi awal susu.','ok');
+  resetSimulationForRepeat();
 });
 
 /* ---------- tahap 5 ---------- */
@@ -2856,6 +2960,20 @@ function renderSummary(){
    $('#finalModal').classList.add('open');
   });
  /* ---------- penutupan setelah kesimpulan ---------- */
+ $('#btnFinalBack').addEventListener('click', ()=>{
+   // X hanya menutup dialog dan mengembalikan pengguna ke Tahap 8 agar
+   // kesimpulan masih dapat diperiksa/diedit sebelum benar-benar selesai.
+   $('#finalModal').classList.remove('open');
+   S.finished = false;
+   save();
+   updateLabProgress();
+   renderStepper();
+   gotoStep(8);
+   setTimeout(()=>{
+     const el = $('#conclText');
+     if(el) el.focus();
+   }, 80);
+ });
  $('#btnFinalPrint').addEventListener('click', ()=>{
   // Pastikan data terakhir (termasuk kesimpulan dan emoticon) sudah masuk
   // ke lembar cetak sebelum dialog print browser dibuka.
@@ -3311,6 +3429,7 @@ lastSeenCount = countDone();
 updateLabProgress();
 applySound();
 bindHistoryControls();
+initStepperScroll();
 
 if(window.lucide) lucide.createIcons();
 runLoader();
