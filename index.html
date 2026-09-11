@@ -1525,6 +1525,8 @@ body.drawer-open .drawer{transform:none}
   <li>PhET Interactive Simulations, University of Colorado Boulder. <b>Simulasi laboratorium virtual</b>. <a href="https://phet.colorado.edu" target="_blank" rel="noopener noreferrer">https://phet.colorado.edu</a></li>
   <li><b>Sumber Musik:</b> Aylex. <i>Social Network</i>. Free Background Music for Video. <a href="https://freetouse.com/music" target="_blank" rel="noopener noreferrer">FreeToUse Music</a>.</li>
 </ol>
+  </div>
+</div>
 
 <!-- ===================== MODAL PENGEMBANG ===================== -->
 <div class="modal-backdrop dismissible" id="devModal">
@@ -1612,9 +1614,23 @@ body.drawer-open .drawer{transform:none}
     <div class="final-quote">🧪 “Ilmuwan tidak hanya melihat perubahan, tetapi mencari bukti untuk menjelaskan mengapa perubahan tersebut terjadi!”</div>
     <p id="finalSummary" style="font-size:.9rem"></p>
     <div class="step-actions" style="justify-content:center; margin-top:14px">
-      <button class="btn blue" id="btnFinalLKPD"><i data-lucide="notebook-pen"></i> Lihat / Cetak LKPD</button>
-      <button class="btn amber" id="btnEndExp"><i data-lucide="flag"></i> Akhiri Eksperimen</button>
+      <button class="btn blue" id="btnFinalPrint"><i data-lucide="printer"></i> Cetak LKPD / PDF</button>
+      <button class="btn amber" id="btnFinalDone"><i data-lucide="check-circle-2"></i> Selesai</button>
     </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL PILIHAN PENUTUPAN EKSPERIMEN ===================== -->
+<div class="modal-backdrop" id="finishChoiceModal">
+  <div class="modal">
+    <div class="final-badge"><i data-lucide="flag"></i></div>
+    <h2 style="text-align:center; color:var(--royal)">Eksperimen Selesai 🎉</h2>
+    <p style="font-size:.9rem; text-align:center; margin-bottom:14px">Pilih bagaimana kamu ingin mengakhiri sesi eksperimen ini.</p>
+    <div class="step-actions" style="justify-content:center; margin-top:14px; flex-direction:column">
+      <button class="btn primary big" id="btnFinishSaveHistory"><i data-lucide="history"></i> Selesai &amp; Simpan Riwayat</button>
+      <button class="btn ghost big" id="btnFinishDeleteHistory"><i data-lucide="trash-2"></i> Selesai &amp; Hapus Riwayat</button>
+    </div>
+    <p style="font-size:.72rem; color:var(--ink-soft); text-align:center; margin-top:10px">Keduanya akan mengakhiri sesi dan kembali ke Menu Utama.</p>
   </div>
 </div>
 
@@ -1809,7 +1825,7 @@ function renderHistory(){
     list.innerHTML = `<div class="history-empty">
       <i data-lucide="history"></i>
       <p><b>Belum ada riwayat penggunaan.</b></p>
-      <p>Riwayat akan muncul setelah pengguna memilih <b>Keluar dan simpan riwayat</b> dari menu Logout.</p>
+      <p>Riwayat akan muncul setelah pengguna memilih <b>Selesai &amp; Simpan Riwayat</b> di akhir eksperimen.</p>
     </div>`;
   }else{
     list.innerHTML = h.map(x=>{
@@ -2839,11 +2855,38 @@ function renderSummary(){
      `Kesimpulanmu: “${S.concl.trim()}”`;
    $('#finalModal').classList.add('open');
   });
- $('#btnFinalLKPD').addEventListener('click', ()=>{ $('#finalModal').classList.remove('open'); openDrawer('lkpd'); });
- $('#btnEndExp').addEventListener('click', ()=>{
+ /* ---------- penutupan setelah kesimpulan ---------- */
+ $('#btnFinalPrint').addEventListener('click', ()=>{
+  // Pastikan data terakhir (termasuk kesimpulan dan emoticon) sudah masuk
+  // ke lembar cetak sebelum dialog print browser dibuka.
+  preparePrint();
+  window.print();
+ });
+ $('#btnFinalDone').addEventListener('click', ()=>{
+  // Tutup quote selesai, lalu tampilkan pilihan penyimpanan.
   $('#finalModal').classList.remove('open');
-  $('#confirmModal').classList.add('open');
-});
+  $('#finishChoiceModal').classList.add('open');
+  if(window.lucide) lucide.createIcons();
+ });
+ function finishToHome(saveHistory){
+  // Simpan snapshot SEBELUM sesi aktif dihapus agar data eksperimen lengkap.
+  if(saveHistory) addHistorySnapshot('selesai_simpan_riwayat');
+  else clearHistory();
+
+  // Hapus sesi aktif dari localStorage. Setelah itu reload agar state di RAM
+  // juga benar-benar kembali ke kondisi awal (bukan hanya tampilan Menu Utama).
+  try{ localStorage.removeItem(KEY); }catch(e){}
+
+  $('#finishChoiceModal').classList.remove('open');
+  $('#finalModal').classList.remove('open');
+  closeDrawer();
+
+  // Reload mencegah BUG data lama tetap berada di object S setelah kembali
+  // ke Menu Utama. History yang dipilih tetap aman karena memakai KEY terpisah.
+  location.reload();
+ }
+ $('#btnFinishSaveHistory').addEventListener('click', ()=>finishToHome(true));
+ $('#btnFinishDeleteHistory').addEventListener('click', ()=>finishToHome(false));
 
 /* ---------- jurnal ---------- */
 function resultLabel(){
@@ -3126,7 +3169,7 @@ window.addEventListener('beforeprint', ()=>{
 });
  $('#btnPrint').addEventListener('click', ()=>{
   preparePrint();
-  setTimeout(()=>window.print(), 60);
+  window.print();
 });
 
 /* ===================== MENU REFERENSI & PENGEMBANG ===================== */
@@ -3209,7 +3252,10 @@ function openZoom(){
 });
 document.addEventListener('keydown', e=>{
   if(e.key==='Escape'){
-    $$('.modal-backdrop.open').forEach(m=>m.classList.remove('open'));
+    // Modal pilihan penutupan harus tetap terbuka sampai pengguna memilih salah satu opsi.
+    $$('.modal-backdrop.open').forEach(m=>{
+      if(m.id !== 'finishChoiceModal') m.classList.remove('open');
+    });
     const pop = document.getElementById('sndPop'); if(pop) pop.classList.add('hidden');
     if(document.body.classList.contains('drawer-open')) closeDrawer();
     zoomOpen=false;
@@ -3311,5 +3357,3 @@ window.labMayaValidateFlow=function(){
 
 </body>
 </html>
-
-
